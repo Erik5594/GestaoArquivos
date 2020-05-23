@@ -1,31 +1,25 @@
 package br.com.nextsites.model;
 
 import lombok.Data;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.persistence.CascadeType;
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 /**
  * Next Solucoes
  *
  * @author erik_
- * Data Criacao: 23/05/2020 - 13:41
+ * Data Criacao: 23/05/2020 - 14:09
  */
 
-
 @Entity
-@Table(name = "usuario")
-public @Data class Usuario implements Serializable {
+@Table(name = "grupo")
+public @Data class Grupo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,19 +27,11 @@ public @Data class Usuario implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, length = 80)
+    @Column(nullable=false, length=40)
     private String nome;
 
-    @Column(nullable = false, unique = true, length = 255)
-    private String email;
-
-    @Column(nullable = false, length = 20)
-    private String senha;
-
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "usuario_grupo", joinColumns = @JoinColumn(name="usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "grupo_id"))
-    private List<Grupo> grupos = new ArrayList<>();
+    @Column(nullable=false, length=80)
+    private String descricao;
 
 
     @Override
@@ -55,6 +41,7 @@ public @Data class Usuario implements Serializable {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -63,7 +50,7 @@ public @Data class Usuario implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Usuario other = (Usuario) obj;
+        Grupo other = (Grupo) obj;
         if (id == null) {
             if (other.id != null)
                 return false;
@@ -71,4 +58,5 @@ public @Data class Usuario implements Serializable {
             return false;
         return true;
     }
+
 }

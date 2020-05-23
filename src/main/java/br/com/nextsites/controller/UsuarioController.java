@@ -4,6 +4,7 @@ import br.com.nextsites.dto.UsuarioDto;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -15,6 +16,7 @@ import javax.inject.Named;
  */
 
 @Named(value = "usuarioController")
+@ViewScoped
 public class UsuarioController {
 
     private static final String TITULO = "Cadastro de Usuário: %s";

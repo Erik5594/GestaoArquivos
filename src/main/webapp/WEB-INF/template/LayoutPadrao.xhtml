@@ -21,6 +21,7 @@
             <h:outputText value=""/>
         </f:facet>
     </p:ajaxStatus>
+
     <div style="padding: 5px 0px; margin-bottom: 20px; height: 30px; background-color: #545454; color: #fff; box-shadow: 0px 2px 2px #ccc;">
         <div style="margin-left: 8px; float: left">
             <h:link outcome="/index">
@@ -30,7 +31,7 @@
 
         <div style="margin-left: 8px; float: right; margin-right: 110px">
                 <span style="float: left; height: 30px; line-height: 30px; margin-right: 60px">
-                Olá usuário!
+                Olá #{seguranca.nomeUsuario}!
                 </span>
 
             <h:form style="display: inline-block">
@@ -41,7 +42,7 @@
                         <p:separator/>
                         <p:menuitem value="Arquivos" />
                     </p:submenu>
-                    <p:menuitem value="Sair" />
+                    <p:menuitem value="Sair" url="/logout" />
                 </p:menubar>
             </h:form>
         </div>

@@ -89,7 +89,7 @@ h1 {
 }
 
 .menu-sistema .ui-icon-triangle-1-s {
-    background: url(#{resource['images:seta-para-baixo.png']}) no-repeat;
+    background: url(#{resource['images:seta-para-baixo.png']}) no-repeat !important;
 }
 /* Menu sistema fim */
 
@@ -104,4 +104,8 @@ h1 {
 .ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled{
     opacity: .90;
     background-color: #e1e1e1 !important;
+}
+
+.ui-state-disabled {
+    opacity: .80 !important;
 }
