@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title><ui:insert name="titulo">Sistema de Gestão de Arquivos</ui:insert></title>
+    <h:outputStylesheet library="css" name="sistema.css" />
+</h:head>
+
+<h:body>
+    <p:ajaxStatus styleClass="ajax-status">
+        <f:facet name="start">
+            <h:graphicImage library="images" name="loading.gif"/>
+        </f:facet>
+        <f:facet name="complete">
+            <h:outputText value=""/>
+        </f:facet>
+    </p:ajaxStatus>
+    <div style="padding: 5px 0px; margin-bottom: 20px; height: 30px; background-color: #545454; color: #fff; box-shadow: 0px 2px 2px #ccc;">
+        <div style="margin-left: 8px; float: left">
+            <h:link outcome="/index">
+                <h:graphicImage library="images" name="logo.png" />
+            </h:link>
+        </div>
+
+        <div style="margin-left: 8px; float: right; margin-right: 110px">
+                <span style="float: left; height: 30px; line-height: 30px; margin-right: 60px">
+                Olá usuário!
+                </span>
+
+            <h:form style="display: inline-block">
+                <p:menubar styleClass="menu-sistema">
+                    <p:submenu label="Cadastros">
+                        <p:menuitem value="Usuários" outcome="/pages//usuario/CadastroUsuario"/>
+                        <p:menuitem value="Categorias"/>
+                        <p:separator/>
+                        <p:menuitem value="Arquivos" />
+                    </p:submenu>
+                    <p:menuitem value="Sair" />
+                </p:menubar>
+            </h:form>
+        </div>
+        <div style="margin-left: 8px; clear: both"></div>
+    </div>
+
+
+    <div>
+        <ui:insert name="corpo"/>
+    </div>
+
+    <p:separator style="margin-top: 20px"/>
+</h:body>
+
+</html>
