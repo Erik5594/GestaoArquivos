@@ -1,6 +1,7 @@
 package br.com.nextsites.controller;
 
 import br.com.nextsites.dto.UsuarioDto;
+import br.com.nextsites.repository.Usuarios;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -26,10 +27,14 @@ public class UsuarioController {
     @Inject
     private UsuarioDto usuario;
 
+    @Inject
+    private Usuarios usuarios;
+
     public void salvar(){
         //throw new RuntimeException("Teste");
         System.out.println(usuario);
         sendMensagem(SUCESSO, FacesMessage.SEVERITY_INFO);
+        usuarios.porId(1l);
     }
 
     public void sendMensagem(String mensagem, FacesMessage.Severity nivel){

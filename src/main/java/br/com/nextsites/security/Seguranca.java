@@ -20,9 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 @RequestScoped
 public class Seguranca  {
 
-    @Inject
-    private ExternalContext externalContext;
-
     public String getNomeUsuario() {
         String nome = null;
 
