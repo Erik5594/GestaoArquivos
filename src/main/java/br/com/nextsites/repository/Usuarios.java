@@ -3,7 +3,6 @@ package br.com.nextsites.repository;
 import br.com.nextsites.model.Usuario;
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -24,12 +23,6 @@ public class Usuarios implements Serializable {
 
     public Usuario porId(Long id) {
         return this.manager.find(Usuario.class, id);
-    }
-
-    public List<Usuario> vendedores() {
-        // TODO filtrar apenas vendedores (por um grupo específico)
-        return this.manager.createQuery("from Usuario", Usuario.class)
-                .getResultList();
     }
 
     public Usuario porEmail(String email) {
