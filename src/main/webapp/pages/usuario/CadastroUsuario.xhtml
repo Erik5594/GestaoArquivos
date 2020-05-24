@@ -15,7 +15,8 @@
                 <p:toolbarGroup>
                     <p:button value="Novo" outcome="CadastroUsuario"/>
 
-                    <p:commandButton value="Salvar" id="botaoSalvar" actionListener="#{usuarioController.salvar}" update="frm"/>
+                    <p:commandButton value="Salvar" id="botaoSalvar" actionListener="#{usuarioController.salvar}"
+                                     update="frm" process="@this painel"/>
                 </p:toolbarGroup>
                 <p:toolbarGroup align="right">
                     <p:button value="Pesquisa"/>
@@ -25,11 +26,11 @@
             <p:panelGrid columns="2" id="painel" style="width: 100%; margin-top: 20px"
                          columnClasses="rotulo, campo">
 
-                <p:outputLabel value="Nível" for="nivel"/>
-                <p:selectOneMenu id="nivel" required="true">
+                <p:outputLabel value="Nível" for="@next"/>
+                <p:selectOneMenu id="nivel" required="true" value="#{usuarioController.nivelSelecionado}"
+                    filter="true" filterMatchMode="startsWith">
                     <f:selectItem itemLabel="Selecione o nível" itemValue="" />
-                    <f:selectItem itemLabel="Cliente" itemValue="1" />
-                    <f:selectItem itemLabel="Administrador" itemValue="2" />
+                    <f:selectItems value="#{usuarioController.niveis}" var="nivel" itemLabel="#{nivel.nome}" itemValue="#{nivel}"/>
                 </p:selectOneMenu>
 
                 <p:outputLabel value="Nome" for="nome"/>

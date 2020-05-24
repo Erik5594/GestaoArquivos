@@ -38,4 +38,8 @@ public class Usuarios implements Serializable {
         return usuario;
     }
 
+    public void salvar(Usuario usuario){
+        manager.merge(usuario);
+    }
+
 }

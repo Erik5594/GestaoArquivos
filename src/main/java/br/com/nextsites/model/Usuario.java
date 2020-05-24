@@ -1,19 +1,12 @@
 package br.com.nextsites.model;
 
+import br.com.nextsites.dto.UsuarioDto;
 import lombok.Data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Next Solucoes
@@ -42,10 +35,9 @@ public @Data class Usuario implements Serializable {
     @Column(nullable = false, length = 20)
     private String senha;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "usuario_grupo", joinColumns = @JoinColumn(name="usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "grupo_id"))
-    private List<Grupo> grupos = new ArrayList<>();
+    @ManyToOne (cascade = CascadeType.ALL)
+    @JoinColumn(name = "nivel_id")
+    private Grupo nivel;
 
 
     @Override

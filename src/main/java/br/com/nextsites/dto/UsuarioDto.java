@@ -1,6 +1,11 @@
 package br.com.nextsites.dto;
 
+import br.com.nextsites.model.Grupo;
+import br.com.nextsites.model.Usuario;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Next Solucoes
@@ -10,7 +15,17 @@ import lombok.Data;
  */
 public @Data class UsuarioDto {
     private String nome;
-    private String nivel;
+    private Long nivel;
     private String email;
     private String senha;
+
+    public UsuarioDto() {
+    }
+
+    public UsuarioDto(Usuario usuario) {
+        this.nome = usuario.getNome();
+        this.email = usuario.getEmail();
+        this.senha = usuario.getSenha();
+        this.nivel = usuario.getNivel().getId();
+    }
 }
