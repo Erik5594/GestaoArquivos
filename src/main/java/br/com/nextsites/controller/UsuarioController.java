@@ -6,6 +6,7 @@ import br.com.nextsites.model.Grupo;
 import br.com.nextsites.repository.Usuarios;
 import br.com.nextsites.service.GrupoService;
 import br.com.nextsites.service.UsuarioService;
+import br.com.nextsites.util.jsf.FacesUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,14 +33,14 @@ public class UsuarioController {
     private static final String ERRO_INTERNO = String.format(TITULO, "Ocorreu um erro interno. Contate a administração do sistema!");
     private static final String SUCESSO = String.format(TITULO, "Cadastro realizado com sucesso!");
 
-    @Inject
+    @Inject @Getter @Setter
     private UsuarioDto usuario;
 
     @Inject
     private UsuarioService usuarioService;
 
     @Inject
-    private GrupoService grupoService;
+    private GrupoService nivelService;
 
     @Getter @Setter
     private List<GrupoDto> niveis;
@@ -47,33 +48,27 @@ public class UsuarioController {
     @Getter @Setter
     private GrupoDto nivelSelecionado;
 
-    @PostConstruct
-    public void init(){
-        niveis = grupoService.getGrupos();
-        if(niveis != null && !niveis.isEmpty()){
-            for(GrupoDto grupo : niveis){
-                System.out.println(grupo);
+    public void inicializar() {
+        if (FacesUtil.isNotPostback()) {
+            if(usuario == null){
+                limpar();
             }
+            niveis = nivelService.getGrupos();
         }
     }
 
     public void salvar(){
-        //throw new RuntimeException("Teste");
-        System.out.println(usuario);
-        System.out.println(nivelSelecionado);
+        limpar();
         sendMensagem(SUCESSO, FacesMessage.SEVERITY_INFO);
-        usuarioService.getUsuarioById(1l);
     }
 
     public void sendMensagem(String mensagem, FacesMessage.Severity nivel){
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(nivel, mensagem, null));
     }
 
-    public UsuarioDto getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(UsuarioDto usuario) {
-        this.usuario = usuario;
+    private void limpar(){
+        usuario = new UsuarioDto();
+        niveis = null;
+        nivelSelecionado = null;
     }
 }

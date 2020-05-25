@@ -1,10 +1,7 @@
 package br.com.nextsites.converter;
 
-import br.com.nextsites.dto.GrupoDto;
-import br.com.nextsites.model.Grupo;
-import br.com.nextsites.repository.Grupos;
-import br.com.nextsites.service.GrupoService;
-import br.com.nextsites.util.cdi.CDIServiceLocator;
+import br.com.nextsites.dto.UsuarioDto;
+import br.com.nextsites.service.UsuarioService;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.faces.component.UIComponent;
@@ -17,20 +14,20 @@ import javax.inject.Inject;
  * Next Solucoes
  *
  * @author erik_
- * Data Criacao: 24/05/2020 - 10:01
+ * Data Criacao: 24/05/2020 - 21:54
  */
-@FacesConverter(forClass = GrupoDto.class)
-public class GrupoConverter implements Converter {
+@FacesConverter(forClass = UsuarioDto.class)
+public class UsuarioConverter implements Converter {
 
     @Inject
-    private GrupoService grupos;
+    private UsuarioService usuarioService;
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        GrupoDto retorno = null;
+        UsuarioDto retorno = null;
 
         if (StringUtils.isNotEmpty(value)) {
-            retorno = this.grupos.getGrupoById(new Long(value));
+            retorno = this.usuarioService.getUsuarioById(new Long(value));
         }
 
         return retorno;
@@ -39,7 +36,7 @@ public class GrupoConverter implements Converter {
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value != null) {
-            return ((GrupoDto) value).getId().toString();
+            return ((UsuarioDto) value).getId().toString();
         }
         return "";
     }

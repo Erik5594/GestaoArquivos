@@ -3,11 +3,16 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui">
 
     <ui:define name="titulo">Novo Usuário</ui:define>
 
     <ui:define name="corpo">
+        <f:metadata>
+            <o:viewParam name="usuario" value="#{usuarioController.usuario}" />
+            <f:event listener="#{usuarioController.inicializar}" type="preRenderView" />
+        </f:metadata>
         <h:form id="frm">
             <p:messages showDetail="false" closable="true"/>
             <h1>Novo usuário</h1>
@@ -29,7 +34,7 @@
                 <p:outputLabel value="Nível" for="@next"/>
                 <p:selectOneMenu id="nivel" required="true" value="#{usuarioController.nivelSelecionado}"
                     filter="true" filterMatchMode="startsWith">
-                    <f:selectItem itemLabel="Selecione o nível" itemValue="" />
+                    <f:selectItem itemLabel="Selecione o nível" />
                     <f:selectItems value="#{usuarioController.niveis}" var="nivel" itemLabel="#{nivel.nome}" itemValue="#{nivel}"/>
                 </p:selectOneMenu>
 
