@@ -21,45 +21,51 @@
                     <p:button value="Novo" outcome="UploadArquivo"/>
 
                     <p:commandButton value="Salvar" id="botaoSalvar" actionListener="#{arquivoUploadController.salvar}"
-                                     update="frm" process="@this painel"/>
+                                     update="frm" process="@this painel" disabled="#{!arquivoUploadController.exibirPermissao}"/>
                 </p:toolbarGroup>
                 <p:toolbarGroup align="right">
                     <p:button value="Pesquisa"/>
                 </p:toolbarGroup>
             </p:toolbar>
-            <p:panel id="panel" header="Categoria" style="margin-bottom: 20px">
+            <p:panel id="panel" header="Categoria" style="margin-bottom: 20px" rendered="#{arquivoUploadController.exibirCategoria}">
                 <h:panelGrid columns="2" id="painel" style="width: 100%; margin: 20px"
                              columnClasses="rotulo, campo">
                     <p:outputLabel value="Categoria"/>
                     <p:column>
                         <ui:repeat value="#{arquivoUploadController.categorias}" var="categoria">
                             <p:outputLabel value="#{categoria.nomeCategoria}" rendered="#{!categoria.editavel}"/>
-                            <p:inputText value="#{categoria.nomeCategoria}" rendered="#{categoria.editavel}" size="10"/> /
+                            <p:autoComplete id="acMinLength" minQueryLength="3" value="#{categoria.nomeCategoria}" onkeyup="this.value = this.value.toUpperCase()"
+                                            completeMethod="#{arquivoUploadController.completeNome}"
+                                            effect="fade" rendered="#{categoria.editavel}" size="10"/> /
                             <p:commandButton icon="pi pi-plus" actionListener="#{arquivoUploadController.adcionarNovaCategoria()}"
                                              process="@this :frm:painel" update=":frm:painel" rendered="#{categoria.editavel}"/>
                             <p:commandButton icon="pi pi-minus" actionListener="#{arquivoUploadController.removerCategoria()}"
                                              process="@this :frm:painel" update=":frm:painel" rendered="#{categoria.editavel}"
                                              disabled="#{arquivoUploadController.categorias.size() == 1}"/>
                         </ui:repeat>
-                        <p:commandButton icon="pi pi-check" actionListener="#{arquivoUploadController.concluir()}"
+                        <p:commandButton icon="pi pi-check" actionListener="#{arquivoUploadController.concluirCaminho()}"
                                          process="@this painel" update="frm"/>
                     </p:column>
                 </h:panelGrid>
-                <p:outputLabel value="#{arquivoUploadController.concluido}" style="color: red"
-                               rendered="#{arquivoUploadController.concluido != null and !''.equals(arquivoUploadController.concluido)}"/>
             </p:panel>
-            <p:panel id="upload" header="Carregar Arquivos" style="margin-bottom: 20px">
-                <p:fileUpload listener="#{arquivoUploadController.handleFileUpload}" mode="advanced" dragDropSupport="false" label="Selecionar"
-                              multiple="true" update="frm" sizeLimit="10000000" fileLimit="100" allowTypes="/(\.|\/)(pdf)$/"
+            <p:panel id="upload" header="Carregar Arquivos para >>> #{arquivoUploadController.caminhoConcluido}" style="margin-bottom: 20px" rendered="#{arquivoUploadController.exibirUploadFiles}">
+                <p:fileUpload listener="#{arquivoUploadController.handleFileUpload}" update="frm"
+                              mode="advanced" dragDropSupport="false" label="Selecionar"
+                              multiple="true" sizeLimit="10000000" fileLimit="100" allowTypes="/(\.|\/)(pdf)$/"
                               cancelLabel="Cancelar"/>
             </p:panel>
-            <p:panel id="permisao" header="Permissão" style="margin-bottom: 20px">
+            <p:panel id="permisao" header="Cliente(s) que poderão acessar esse(s) arquivo(s)" style="margin-bottom: 20px" rendered="#{arquivoUploadController.exibirPermissao}">
                 <h:panelGrid columns="2">
                     <p:selectCheckboxMenu id="multiple" value="#{arquivoUploadController.usuariosSelecionados}" label="Selecione os clientes" multiple="true"
                                           filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
                         <f:selectItems value="#{arquivoUploadController.usuarios}" />
                     </p:selectCheckboxMenu>
                 </h:panelGrid>
+                <p:dataTable value="#{arquivoUploadController.files}" var="file">
+                    <p:column headerText="Arquivos">
+                        <h:outputText value="#{file.fileName}" />
+                    </p:column>
+                </p:dataTable>
             </p:panel>
         </h:form>
     </ui:define>

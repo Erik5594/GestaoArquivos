@@ -34,8 +34,8 @@ public class CategoriaConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        if (value != null && ((CategoriaDto) value).getId() != null) {
-            return ((CategoriaDto) value).getId().toString();
+        if (value != null && ((CategoriaDto) value).getNomeCategoria() != null) {
+            return ((CategoriaDto) value).getNomeCategoria();
         }
         return "";
     }

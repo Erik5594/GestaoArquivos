@@ -2,11 +2,15 @@ package br.com.nextsites.controller;
 
 import br.com.nextsites.dto.CategoriaDto;
 import br.com.nextsites.dto.UsuarioDto;
+import br.com.nextsites.service.ArquivoService;
 import br.com.nextsites.service.UsuarioService;
+import br.com.nextsites.util.file.FileUtil;
 import br.com.nextsites.util.jsf.FacesUtil;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.file.UploadedFile;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -41,10 +45,22 @@ public class ArquivoUploadController {
     private List<UsuarioDto> usuariosSelecionados;
 
     @Getter @Setter
-    private String concluido;
+    private String caminhoConcluido;
 
     @Inject
     private UsuarioService usuarioService;
+
+    @Inject
+    private ArquivoService arquivoService;
+
+    @Getter @Setter
+    private boolean exibirCategoria = true;
+    @Getter @Setter
+    private boolean exibirUploadFiles = true;
+    @Getter @Setter
+    private boolean exibirPermissao = true;
+    @Getter @Setter
+    private List<UploadedFile> files;
 
     @PostConstruct
     public void init(){
@@ -62,30 +78,48 @@ public class ArquivoUploadController {
         }
     }
 
+    public List<String> completeNome(String start) {
+        return arquivoService.nomePastas(getCaminhoAtual(), start.toUpperCase());
+    }
+
     public void adcionarNovaCategoria(){
         System.out.println("Adcionando Categoria");
         if(categorias.size() > 0){
             categorias.get(categorias.size()-1).setEditavel(false);
         }
+        System.out.println(System.getProperty("user.home"));
         CategoriaDto novaCategoria = new CategoriaDto();
         novaCategoria.setEditavel(true);
         categorias.add(novaCategoria);
     }
 
     public void removerCategoria(){
-        System.out.println("Remover Categoria");
         if(categorias.size() > 1){
             categorias.remove(categorias.size()-1);
-            categorias.get(categorias.size()-1).setEditavel(true);
+            CategoriaDto categoria = categorias.get(categorias.size()-1);
+            categoria.setEditavel(true);
+            categoria.setNomeCategoria("");
         }
     }
 
-    public void concluir(){
-        concluido = "";
-        for(CategoriaDto categoria : categorias){
-            concluido = concluido + "/"+categoria.getNomeCategoria().toUpperCase();
+    public void concluirCaminho(){
+        caminhoConcluido = getCaminhoAtual();
+        if(StringUtils.isNotBlank(caminhoConcluido) && !FileUtil.SEPARADOR.equals(caminhoConcluido)) {
+            arquivoService.nomePastas(caminhoConcluido, null);
+            exibirCategoria = false;
+            exibirUploadFiles = true;
+            exibirPermissao = false;
         }
+    }
 
+    private String getCaminhoAtual(){
+        String caminho = "";
+        for(CategoriaDto categoria : categorias){
+            if(StringUtils.isNotBlank(categoria.getNomeCategoria())){
+                caminho = caminho + categoria.getNomeCategoria().toUpperCase()+FileUtil.SEPARADOR;
+            }
+        }
+        return caminho;
     }
 
     public void salvar(){
@@ -98,7 +132,17 @@ public class ArquivoUploadController {
     }
 
     public void handleFileUpload(FileUploadEvent event) {
-        FacesMessage msg = new FacesMessage("Successful", event.getFile().getFileName() + " is uploaded.");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        System.out.println(event.getFile().getFileName());
+        addFile(event.getFile());
+        exibirUploadFiles = false;
+        exibirCategoria = false;
+        exibirPermissao = true;
+    }
+
+    public void addFile(UploadedFile file) {
+        if(this.files == null){
+            this.files = new ArrayList<>();
+        }
+        this.files.add(file);
     }
 }
