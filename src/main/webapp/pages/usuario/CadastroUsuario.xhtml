@@ -28,28 +28,34 @@
                 </p:toolbarGroup>
             </p:toolbar>
 
-            <p:panelGrid columns="2" id="painel" style="width: 100%; margin-top: 20px"
+            <h:panelGrid columns="2" id="painel" style="width: 100%; margin: 20px"
                          columnClasses="rotulo, campo">
 
                 <p:outputLabel value="Nível" for="@next"/>
-                <p:selectOneMenu id="nivel" required="true" value="#{usuarioController.nivelSelecionado}"
+                <p:selectOneMenu id="nivel" value="#{usuarioController.nivelSelecionado}"
+                    required="true" requiredMessage="O campo Nível é obrigatório."
                     filter="true" filterMatchMode="startsWith">
                     <f:selectItem itemLabel="Selecione o nível" />
                     <f:selectItems value="#{usuarioController.niveis}" var="nivel" itemLabel="#{nivel.nome}" itemValue="#{nivel}"/>
                 </p:selectOneMenu>
 
                 <p:outputLabel value="Nome" for="nome"/>
-                <p:inputText id="nome" size="20" maxlength="20" required="true" value="#{usuarioController.usuario.nome}"/>
+                <p:inputText id="nome" size="30" maxlength="20" value="#{usuarioController.usuario.nome}"
+                             required="true" requiredMessage="O campo Nome é obrigatório."/>
 
                 <p:outputLabel value="E-mail" for="email"/>
-                <p:inputText id="email" size="60" maxlength="80" required="true" value="#{usuarioController.usuario.email}"/>
+                <p:inputText id="email" size="30" value="#{usuarioController.usuario.email}"
+                             required="true" requiredMessage="O campo E-mail é obrigatório."/>
 
                 <p:outputLabel value="Senha" for="pwd1"/>
-                <p:password id="pwd1" value="#{usuarioController.usuario.senha}" match="pwd2" label="Senha" required="true" />
+                <p:password id="pwd1" value="#{usuarioController.usuario.senha}" match="pwd2"
+                            required="true" requiredMessage="O campo Senha é obrigatório."
+                            weakLabel="Fraca" goodLabel="Bom" strongLabel="Forte" validatorMessage="Senhas não conferem"
+                            feedback="true" promptLabel="Digite uma senha"/>
 
                 <p:outputLabel value="Confirme a senha" for="pwd2"/>
-                <p:password id="pwd2" value="#{usuarioController.usuario.senha}" label="Confirme a senha" required="true" />
-            </p:panelGrid>
+                <p:password id="pwd2" value="#{usuarioController.usuario.senha}" />
+            </h:panelGrid>
         </h:form>
     </ui:define>
 </ui:composition>

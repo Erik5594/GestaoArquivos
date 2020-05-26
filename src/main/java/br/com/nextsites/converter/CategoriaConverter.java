@@ -1,5 +1,6 @@
 package br.com.nextsites.converter;
 
+import br.com.nextsites.dto.CategoriaDto;
 import br.com.nextsites.dto.UsuarioDto;
 import br.com.nextsites.service.UsuarioService;
 import org.apache.commons.lang3.StringUtils;
@@ -16,18 +17,16 @@ import javax.inject.Inject;
  * @author erik_
  * Data Criacao: 24/05/2020 - 21:54
  */
-@FacesConverter(forClass = UsuarioDto.class)
-public class UsuarioConverter implements Converter {
+@FacesConverter(forClass = CategoriaDto.class)
+public class CategoriaConverter implements Converter {
 
-    @Inject
-    private UsuarioService usuarioService;
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        UsuarioDto retorno = null;
+        CategoriaDto retorno = null;
 
         if (StringUtils.isNotEmpty(value)) {
-            retorno = this.usuarioService.getUsuarioById(new Long(value));
+            retorno = new CategoriaDto();
         }
 
         return retorno;
@@ -35,8 +34,8 @@ public class UsuarioConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        if (value != null && ((UsuarioDto) value).getId() != null) {
-            return ((UsuarioDto) value).getId().toString();
+        if (value != null && ((CategoriaDto) value).getId() != null) {
+            return ((CategoriaDto) value).getId().toString();
         }
         return "";
     }

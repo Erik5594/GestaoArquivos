@@ -10,6 +10,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title><ui:insert name="titulo">Sistema de Gestão de Arquivos</ui:insert></title>
     <h:outputStylesheet library="css" name="sistema.css" />
+    <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces" />
 </h:head>
 
 <h:body>
@@ -38,9 +39,8 @@
                 <p:menubar styleClass="menu-sistema" autoDisplay="false">
                     <p:submenu label="Cadastros">
                         <p:menuitem value="Usuários" outcome="/pages/usuario/CadastroUsuario"/>
-                        <p:menuitem value="Categorias"/>
                         <p:separator/>
-                        <p:menuitem value="Arquivos" />
+                        <p:menuitem value="Arquivos" outcome="/pages/arquivo/UploadArquivo"/>
                     </p:submenu>
                     <p:submenu label="Pesquisa">
                         <p:menuitem value="Usuários" outcome="/pages/usuario/PesquisaUsuarios"/>

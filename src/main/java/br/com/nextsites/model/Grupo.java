@@ -33,6 +33,12 @@ public @Data class Grupo implements Serializable {
     @Column(nullable=false, length=80)
     private String descricao;
 
+    public Grupo() {
+    }
+
+    public Grupo(Long id) {
+        this.id = id;
+    }
 
     @Override
     public int hashCode() {

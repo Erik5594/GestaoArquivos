@@ -3,6 +3,7 @@ package br.com.nextsites.repository;
 import br.com.nextsites.model.Usuario;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -20,6 +21,9 @@ public class Usuarios implements Serializable {
 
     @Inject
     private EntityManager manager;
+
+    @Inject
+    private Grupos grupos;
 
     public Usuario porId(Long id) {
         return this.manager.find(Usuario.class, id);
@@ -39,7 +43,21 @@ public class Usuarios implements Serializable {
     }
 
     public void salvar(Usuario usuario){
+        usuario.setNivel(grupos.porId(usuario.getNivel().getId()));
         manager.merge(usuario);
+    }
+
+    public List<Usuario> listarClientes() {
+        List<Usuario> usuarios = null;
+
+        try {
+            usuarios = this.manager.createQuery("from Usuario where lower(nivel.nome) = :nivel", Usuario.class)
+                    .setParameter("nivel", "cliente".toLowerCase()).getResultList();
+        } catch (NoResultException e) {
+            // nenhum usuário encontrado com o e-mail informado
+        }
+
+        return usuarios;
     }
 
 }

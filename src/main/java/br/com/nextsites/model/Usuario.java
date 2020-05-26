@@ -39,6 +39,19 @@ public @Data class Usuario implements Serializable {
     @JoinColumn(name = "nivel_id")
     private Grupo nivel;
 
+    public Usuario() {
+    }
+
+    public Usuario(UsuarioDto usuarioDto, Long idNivel) {
+        this.nome = usuarioDto.getNome();
+        this.email = usuarioDto.getEmail();
+        this.senha = usuarioDto.getSenha();
+        this.nivel = new Grupo(idNivel);
+    }
+
+    public Usuario(UsuarioDto usuarioDto) {
+
+    }
 
     @Override
     public int hashCode() {
