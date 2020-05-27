@@ -1,5 +1,7 @@
 package br.com.nextsites.model;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -14,7 +16,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "arquivo")
-public class Arquivo  implements Serializable {
+public @Data class Arquivo  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

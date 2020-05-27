@@ -1,5 +1,6 @@
 package br.com.nextsites.controller;
 
+import br.com.nextsites.dto.ArquivoDto;
 import br.com.nextsites.dto.CategoriaDto;
 import br.com.nextsites.dto.UsuarioDto;
 import br.com.nextsites.service.ArquivoService;
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.DualListModel;
 import org.primefaces.model.file.UploadedFile;
 
 import javax.annotation.PostConstruct;
@@ -40,10 +42,7 @@ public class ArquivoUploadController {
     private List<CategoriaDto> categorias;
 
     @Getter @Setter
-    private List<UsuarioDto> usuarios;
-
-    @Getter @Setter
-    private List<UsuarioDto> usuariosSelecionados;
+    private DualListModel<UsuarioDto> usuarios;
 
     @Getter @Setter
     private String caminhoConcluido;
@@ -61,18 +60,19 @@ public class ArquivoUploadController {
     @Getter @Setter
     private boolean exibirPermissao = true;
     @Getter @Setter
-    private List<UploadedFile> files;
+    private List<ArquivoDto> arquivos;
 
     @PostConstruct
     public void init(){
-        usuarios = new ArrayList<>();
-        usuarios = usuarioService.getListaClientes();
+        List<UsuarioDto> listUsuariosSource = usuarioService.getListaClientes();
+        List<UsuarioDto> listUsuariosTarget = new ArrayList<>();
+        usuarios = new DualListModel<>(listUsuariosSource, listUsuariosTarget);
     }
 
     public void inicializar() {
         if (FacesUtil.isNotPostback()) {
             categorias = new ArrayList<>();
-            adcionarNovaCategoria();
+            adcionarCategoria();
             if(categoriaDto == null){
                 limpar();
             }
@@ -83,12 +83,18 @@ public class ArquivoUploadController {
         return arquivoService.nomePastas(getCaminhoAtual(), start.toUpperCase());
     }
 
-    public void adcionarNovaCategoria(){
-        System.out.println("Adcionando Categoria");
+    public void adcionarCategoria(){
         if(categorias.size() > 0){
-            categorias.get(categorias.size()-1).setEditavel(false);
+            if(StringUtils.isNotBlank(categorias.get(categorias.size()-1).getNomeCategoria())){
+                categorias.get(categorias.size()-1).setEditavel(false);
+                adcionarNovaCategoria();
+            }
+        }else {
+            adcionarNovaCategoria();
         }
-        System.out.println(System.getProperty("user.home"));
+    }
+
+    private void adcionarNovaCategoria() {
         CategoriaDto novaCategoria = new CategoriaDto();
         novaCategoria.setEditavel(true);
         categorias.add(novaCategoria);
@@ -124,28 +130,47 @@ public class ArquivoUploadController {
     }
 
     public void salvar(){
-        System.out.println("clicou em salvar");
-        FacesUtil.addInfoMessage("Clicou em salvar");
-        if(files != null && !files.isEmpty()){
-            for(UploadedFile file : files){
-                try{
-                    arquivoService.gravarArquivo(caminhoConcluido, file);
-                }catch (IOException e){
-                    //ignorar
-                }
+        if(validar()){
+            List<Long> listIdUsuarios = new ArrayList<>();
+            for(UsuarioDto usuario : usuarios.getTarget()){
+                listIdUsuarios.add(usuario.getId());
+            }
+            for(ArquivoDto arquivoDto : arquivos){
+                arquivoDto.setListIdUsuarios(listIdUsuarios);
+                System.out.println(arquivoDto);
+            }
+
+            FacesUtil.addInfoMessage("Clicou em salvar");
+        }
+    }
+
+    private boolean validar(){
+        boolean retorno = true;
+        if(arquivos == null || arquivos.isEmpty()){
+            retorno = false;
+            FacesUtil.addErrorMessage("Nenhum arquivo carregado!");
+        }
+        if(usuarios.getTarget() == null || usuarios.getTarget().isEmpty()){
+            retorno = false;
+            FacesUtil.addErrorMessage("Nenhum cliente selecionado!");
+        }else{
+            List<UsuarioDto> usuariosDtos = usuarios.getTarget();
+            for(UsuarioDto usuarioDto : usuariosDtos){
+                System.out.println(usuarioDto);
             }
         }
+        return retorno;
     }
 
     private void limpar(){
         categoriaDto = new CategoriaDto();
     }
 
-    public void handleFileUpload(FileUploadEvent event) {
+    public void carregarArquivo(FileUploadEvent event) {
         System.out.println(event.getFile().getFileName());
-        addFile(event.getFile());
         try {
             arquivoService.gravarArquivo(caminhoConcluido, event.getFile());
+            addArquivo(event.getFile());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -154,10 +179,14 @@ public class ArquivoUploadController {
         exibirPermissao = true;
     }
 
-    public void addFile(UploadedFile file) {
-        if(this.files == null){
-            this.files = new ArrayList<>();
+    private void addArquivo(UploadedFile file){
+        if(arquivos == null){
+            arquivos = new ArrayList<>();
         }
-        this.files.add(file);
+        ArquivoDto arquivoDto = new ArquivoDto();
+        arquivoDto.setNome(file.getFileName());
+        arquivoDto.setDiretorio(caminhoConcluido);
+        arquivoDto.setConteudo(file.getContent());
+        arquivos.add(arquivoDto);
     }
 }

@@ -19,24 +19,11 @@ public @Data class UsuarioDto {
     public UsuarioDto() {
     }
 
-    public UsuarioDto(Long id, String nome, Long nivel, String email, String senha) {
-        this.id = id;
-        this.nome = nome;
-        this.nivel = nivel;
-        this.email = email;
-        this.senha = senha;
-    }
-
     public UsuarioDto(Usuario usuario) {
         this.id = usuario.getId();
         this.nome = usuario.getNome();
         this.email = usuario.getEmail();
         this.senha = usuario.getSenha();
         this.nivel = usuario.getNivel().getId();
-    }
-
-    @Override
-    public String toString() {
-        return nome;
     }
 }

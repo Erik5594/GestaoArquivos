@@ -1,10 +1,7 @@
 package br.com.nextsites.converter;
 
 import br.com.nextsites.dto.GrupoDto;
-import br.com.nextsites.model.Grupo;
-import br.com.nextsites.repository.Grupos;
 import br.com.nextsites.service.GrupoService;
-import br.com.nextsites.util.cdi.CDIServiceLocator;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.faces.component.UIComponent;

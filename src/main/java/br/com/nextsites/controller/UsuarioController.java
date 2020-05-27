@@ -28,7 +28,7 @@ import java.util.List;
  * Data Criacao: 22/05/2020 - 17:15
  */
 
-@Named(value = "usuarioController")
+@Named
 @ViewScoped
 public class UsuarioController {
 
@@ -79,7 +79,7 @@ public class UsuarioController {
     private void limpar(){
         usuario = new UsuarioDto();
         niveis = null;
-        nivelSelecionado = null;
+        nivelSelecionado = new GrupoDto();
     }
 
     private void imprimirValidacoes(List<String> validcoes){

@@ -16,7 +16,7 @@ import javax.inject.Inject;
  * @author erik_
  * Data Criacao: 24/05/2020 - 21:54
  */
-@FacesConverter(forClass = UsuarioDto.class)
+@FacesConverter(forClass = UsuarioDto.class, value = "usuario")
 public class UsuarioConverter implements Converter {
 
     @Inject
