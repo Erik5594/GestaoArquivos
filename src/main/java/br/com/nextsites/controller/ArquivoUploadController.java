@@ -18,6 +18,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,6 +126,15 @@ public class ArquivoUploadController {
     public void salvar(){
         System.out.println("clicou em salvar");
         FacesUtil.addInfoMessage("Clicou em salvar");
+        if(files != null && !files.isEmpty()){
+            for(UploadedFile file : files){
+                try{
+                    arquivoService.gravarArquivo(caminhoConcluido, file);
+                }catch (IOException e){
+                    //ignorar
+                }
+            }
+        }
     }
 
     private void limpar(){
@@ -134,6 +144,11 @@ public class ArquivoUploadController {
     public void handleFileUpload(FileUploadEvent event) {
         System.out.println(event.getFile().getFileName());
         addFile(event.getFile());
+        try {
+            arquivoService.gravarArquivo(caminhoConcluido, event.getFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         exibirUploadFiles = false;
         exibirCategoria = false;
         exibirPermissao = true;

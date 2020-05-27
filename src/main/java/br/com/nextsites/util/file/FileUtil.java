@@ -1,6 +1,10 @@
 package br.com.nextsites.util.file;
 
-import java.io.File;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,5 +34,40 @@ public class FileUtil {
             dir.mkdirs();
         }
         return retorno;
+    }
+
+    public void gravarArquivo(final String arquivo, final byte[] conteudo) throws IOException {
+        String caminho = PRINCIPAL+arquivo;
+        File file = new File(caminho);
+        OutputStream out = new FileOutputStream(file);
+        out.write(conteudo);
+        out.close();
+        file.createNewFile();
+    }
+
+    public void gravarArquivoTxt(final String arquivo, final String conteudo) throws IOException {
+        FileWriter fileWriter = new FileWriter(PRINCIPAL+arquivo);
+        PrintWriter gravar = new PrintWriter(fileWriter);
+        gravar.write(conteudo);
+        fileWriter.close();
+        gravar.close();
+    }
+
+    public String getConteudo(String enderecoRecurso) throws IOException {
+        File f = new File(PRINCIPAL+enderecoRecurso);
+
+        PDDocument pdfDocument = null;
+        try{
+            org.apache.pdfbox.io.RandomAccessFile raf = new org.apache.pdfbox.io.RandomAccessFile(f, "r");
+            PDFParser parser = new PDFParser(raf);
+            parser.parse();
+            pdfDocument = parser.getPDDocument();
+            PDFTextStripper stripper = new PDFTextStripper();
+            return stripper.getText(pdfDocument);
+        } finally {
+            if (pdfDocument != null){
+                pdfDocument.close();
+            }
+        }
     }
 }
