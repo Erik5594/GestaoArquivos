@@ -15,13 +15,12 @@ import org.primefaces.model.DualListModel;
 import org.primefaces.model.file.UploadedFile;
 
 import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -137,10 +136,18 @@ public class ArquivoUploadController {
             }
             for(ArquivoDto arquivoDto : arquivos){
                 arquivoDto.setListIdUsuarios(listIdUsuarios);
-                System.out.println(arquivoDto);
             }
-
-            FacesUtil.addInfoMessage("Clicou em salvar");
+            for(ArquivoDto arquivoDto : arquivos){
+                arquivoDto.setDataEnvio(new Date());
+                arquivoService.salvarDocumento(arquivoDto);
+                try {
+                    Thread.sleep(2000l);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            //arquivoService.salvarVariosDocumentos(arquivos);
+            FacesUtil.addInfoMessage("Documento salvo com sucesso!");
         }
     }
 
@@ -153,11 +160,6 @@ public class ArquivoUploadController {
         if(usuarios.getTarget() == null || usuarios.getTarget().isEmpty()){
             retorno = false;
             FacesUtil.addErrorMessage("Nenhum cliente selecionado!");
-        }else{
-            List<UsuarioDto> usuariosDtos = usuarios.getTarget();
-            for(UsuarioDto usuarioDto : usuariosDtos){
-                System.out.println(usuarioDto);
-            }
         }
         return retorno;
     }
@@ -167,7 +169,6 @@ public class ArquivoUploadController {
     }
 
     public void carregarArquivo(FileUploadEvent event) {
-        System.out.println(event.getFile().getFileName());
         try {
             arquivoService.gravarArquivo(caminhoConcluido, event.getFile());
             addArquivo(event.getFile());

@@ -56,7 +56,7 @@
             </p:panel>
             <p:panel id="permisao" header="Cliente(s) que poderão acessar o(s) arquivo(s)" style="margin-bottom: 20px">
                 <p:pickList id="pickList" value="#{arquivoUploadController.usuarios}" showCheckbox="true" responsive="true"
-                            var="usuario" itemLabel="#{usuario.email}" itemValue="#{usuario}" filterMatchMode="contains"
+                            var="usuario" itemLabel="#{usuario.nome}" itemValue="#{usuario}" filterMatchMode="contains"
                             converter="usuario" showSourceFilter="true" showTargetFilter="true" style="margin-bottom: 15px">
                     <f:facet name="sourceCaption">Sem permissão</f:facet>
                     <f:facet name="targetCaption">Com permissão</f:facet>

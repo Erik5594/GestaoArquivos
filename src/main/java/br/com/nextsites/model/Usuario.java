@@ -47,15 +47,15 @@ public @Data class Usuario implements Serializable {
     public Usuario() {
     }
 
+    public Usuario(Long id) {
+        this.id = id;
+    }
+
     public Usuario(UsuarioDto usuarioDto, Long idNivel) {
         this.nome = usuarioDto.getNome();
         this.email = usuarioDto.getEmail();
         this.senha = usuarioDto.getSenha();
         this.nivel = new Grupo(idNivel);
-    }
-
-    public Usuario(UsuarioDto usuarioDto) {
-
     }
 
     @Override

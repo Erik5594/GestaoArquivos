@@ -1,10 +1,13 @@
 package br.com.nextsites.repository;
 
 import br.com.nextsites.model.Arquivo;
+import br.com.nextsites.model.Usuario;
 
+import javax.faces.context.ExceptionHandler;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +22,9 @@ public class Arquivos  implements Serializable {
     @Inject
     private EntityManager manager;
 
+    @Inject
+    private Usuarios usuarioDao;
+
     public List<Arquivo> getArquivos(){
         return manager.createQuery("from Arquivo", Arquivo.class).getResultList();
     }
@@ -28,6 +34,17 @@ public class Arquivos  implements Serializable {
     }
 
     public void salvar(Arquivo arquivo){
-        this.manager.merge(arquivo);
+        if(arquivo.getUsuarios() != null){
+            List<Usuario> usuarios = new ArrayList<>();
+            for(Usuario usuario : arquivo.getUsuarios()){
+                usuarios.add(usuarioDao.porId(usuario.getId()));
+            }
+            arquivo.setUsuarios(usuarios);
+        }
+        try{
+            this.manager.merge(arquivo);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

@@ -61,8 +61,7 @@ public class UsuarioService {
 
     @Transactional
     public void salvar(UsuarioDto usuarioDto){
-        Usuario usuario = new Usuario(usuarioDto, usuarioDto.getNivel());
-        usuarioDao.salvar(usuario);
+        usuarioDao.salvar(new Usuario(usuarioDto, usuarioDto.getNivel()));
     }
 
     @Transactional

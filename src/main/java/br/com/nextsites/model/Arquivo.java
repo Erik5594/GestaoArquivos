@@ -1,9 +1,11 @@
 package br.com.nextsites.model;
 
+import br.com.nextsites.dto.ArquivoDto;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -39,17 +41,45 @@ public @Data class Arquivo  implements Serializable {
     @ManyToMany(mappedBy = "arquivos")
     private List<Usuario> usuarios;
 
+    public Arquivo(ArquivoDto arquivoDto) {
+        this.nome = arquivoDto.getNome();
+        this.diretorio = arquivoDto.getDiretorio();
+        this.conteudo = arquivoDto.getConteudo();
+        this.dataEnvio = arquivoDto.getDataEnvio();
+        if(arquivoDto.getListIdUsuarios() != null && !arquivoDto.getListIdUsuarios().isEmpty()){
+            this.usuarios = new ArrayList<>();
+            for(Long idUsuario : arquivoDto.getListIdUsuarios()){
+                usuarios.add(new Usuario(idUsuario));
+            }
+        }
+    }
+
+    public Arquivo() {
+    }
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Arquivo arquivo = (Arquivo) o;
-        return Objects.equals(id, arquivo.id);
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Arquivo other = (Arquivo) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id);
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
     }
 }

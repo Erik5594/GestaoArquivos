@@ -2,7 +2,6 @@ package br.com.nextsites.service;
 
 import br.com.nextsites.dto.ArquivoDto;
 import br.com.nextsites.model.Arquivo;
-import br.com.nextsites.model.Usuario;
 import br.com.nextsites.repository.Arquivos;
 import br.com.nextsites.repository.Usuarios;
 import br.com.nextsites.util.file.FileUtil;
@@ -54,22 +53,15 @@ public class ArquivoService {
         fileUtil.gravarArquivoTxt(arquivo+".txt", conteudo);
     }
 
-    @Transactional
-    public void gravarArquivoBanco(ArquivoDto arquivoDto){
-        Arquivo arquivo = new Arquivo();
-        arquivo.setNome(arquivoDto.getNome());
-        arquivo.setDiretorio(arquivoDto.getDiretorio());
-        arquivo.setConteudo(arquivoDto.getConteudo());
-        arquivo.setDataEnvio(new Date());
-        List<Usuario> usuarios = new ArrayList<>();
-        for(Long idUsuario : arquivoDto.getListIdUsuarios()){
-            Usuario usuario = usuarioDao.porId(idUsuario);
-            if(usuario != null){
-                usuarios.add(usuario);
-            }
+    public void salvarVariosDocumentos(List<ArquivoDto> arquivoDtoList){
+        for(ArquivoDto arquivoDto : arquivoDtoList){
+            arquivoDto.setDataEnvio(new Date());
+            salvarDocumento(arquivoDto);
         }
-        arquivo.setUsuarios(usuarios);
+    }
 
-        arquivoDao.salvar(arquivo);
+    @Transactional
+    public void salvarDocumento(ArquivoDto arquivoDto){
+        arquivoDao.salvar(new Arquivo(arquivoDto));
     }
 }
