@@ -39,9 +39,7 @@ public @Data class Usuario implements Serializable {
     @JoinColumn(name = "nivel_id")
     private Grupo nivel;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "usuario_arquivo", joinColumns = @JoinColumn(name="usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "arquivo_id"))
+    @ManyToMany(mappedBy = "usuarios")
     private List<Arquivo> arquivos;
 
     public Usuario() {

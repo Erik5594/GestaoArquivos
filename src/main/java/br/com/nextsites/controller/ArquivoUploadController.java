@@ -55,14 +55,18 @@ public class ArquivoUploadController {
     @Getter @Setter
     private boolean exibirCategoria = true;
     @Getter @Setter
-    private boolean exibirUploadFiles = true;
+    private boolean exibirUploadFiles = false;
     @Getter @Setter
-    private boolean exibirPermissao = true;
+    private boolean exibirPermissao = false;
     @Getter @Setter
     private List<ArquivoDto> arquivos;
 
     @PostConstruct
     public void init(){
+        inicializarPickList();
+    }
+
+    private void inicializarPickList(){
         List<UsuarioDto> listUsuariosSource = usuarioService.getListaClientes();
         List<UsuarioDto> listUsuariosTarget = new ArrayList<>();
         usuarios = new DualListModel<>(listUsuariosSource, listUsuariosTarget);
@@ -146,7 +150,7 @@ public class ArquivoUploadController {
                     e.printStackTrace();
                 }
             }
-            //arquivoService.salvarVariosDocumentos(arquivos);
+            limpar();
             FacesUtil.addInfoMessage("Documento salvo com sucesso!");
         }
     }
@@ -166,6 +170,14 @@ public class ArquivoUploadController {
 
     private void limpar(){
         categoriaDto = new CategoriaDto();
+        categorias = new ArrayList<>();
+        adcionarCategoria();
+        inicializarPickList();
+        caminhoConcluido = "";
+        arquivos = new ArrayList<>();
+        exibirCategoria = true;
+        exibirUploadFiles = false;
+        exibirPermissao = false;
     }
 
     public void carregarArquivo(FileUploadEvent event) {

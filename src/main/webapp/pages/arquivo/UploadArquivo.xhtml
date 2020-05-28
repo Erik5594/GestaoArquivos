@@ -27,7 +27,7 @@
                     <p:button value="Pesquisa"/>
                 </p:toolbarGroup>
             </p:toolbar>
-            <p:panel id="panel" header="Categoria" style="margin-bottom: 20px">
+            <p:panel id="panel" header="Categoria" style="margin-bottom: 20px" rendered="#{arquivoUploadController.exibirCategoria}">
                 <h:panelGrid columns="2" id="painel" style="width: 100%; margin: 20px"
                              columnClasses="rotulo, campo">
                     <p:column>
@@ -48,13 +48,15 @@
                     </p:column>
                 </h:panelGrid>
             </p:panel>
-            <p:panel id="upload" header="Carregar Arquivos para seguinte categoria >>> #{arquivoUploadController.caminhoConcluido}" style="margin-bottom: 20px">
+            <p:panel id="upload" header="Carregar Arquivos para seguinte categoria >>> #{arquivoUploadController.caminhoConcluido}"
+                     style="margin-bottom: 20px" rendered="#{arquivoUploadController.exibirUploadFiles}">
                 <p:fileUpload listener="#{arquivoUploadController.carregarArquivo}" update="frm"
                               mode="advanced" dragDropSupport="false" label="Selecionar"
                               multiple="true" sizeLimit="10000000" fileLimit="100" allowTypes="/(\.|\/)(pdf)$/"
                               cancelLabel="Cancelar"/>
             </p:panel>
-            <p:panel id="permisao" header="Cliente(s) que poderão acessar o(s) arquivo(s)" style="margin-bottom: 20px">
+            <p:panel id="permisao" header="Cliente(s) que poderão acessar o(s) arquivo(s)"
+                     style="margin-bottom: 20px" rendered="#{arquivoUploadController.exibirPermissao}">
                 <p:pickList id="pickList" value="#{arquivoUploadController.usuarios}" showCheckbox="true" responsive="true"
                             var="usuario" itemLabel="#{usuario.nome}" itemValue="#{usuario}" filterMatchMode="contains"
                             converter="usuario" showSourceFilter="true" showTargetFilter="true" style="margin-bottom: 15px">
