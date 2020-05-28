@@ -3,7 +3,6 @@ package br.com.nextsites.model;
 import br.com.nextsites.dto.UsuarioDto;
 import lombok.Data;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
@@ -49,11 +48,11 @@ public @Data class Usuario implements Serializable {
         this.id = id;
     }
 
-    public Usuario(UsuarioDto usuarioDto, Long idNivel) {
+    public Usuario(UsuarioDto usuarioDto) {
         this.nome = usuarioDto.getNome();
         this.email = usuarioDto.getEmail();
         this.senha = usuarioDto.getSenha();
-        this.nivel = new Grupo(idNivel);
+        this.nivel = new Grupo(usuarioDto.getNivel().getId());
     }
 
     @Override

@@ -32,7 +32,7 @@
                          columnClasses="rotulo, campo">
 
                 <p:outputLabel value="Nível" for="@next"/>
-                <p:selectOneMenu id="nivel" value="#{usuarioController.nivelSelecionado}"
+                <p:selectOneMenu id="nivel" value="#{usuarioController.usuario.nivel}"
                     required="true" requiredMessage="O campo Nível é obrigatório."
                     filter="true" filterMatchMode="startsWith">
                     <f:selectItem itemLabel="Selecione o nível" />

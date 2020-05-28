@@ -1,6 +1,7 @@
 package br.com.nextsites.model;
 
 import br.com.nextsites.dto.ArquivoDto;
+import br.com.nextsites.dto.UsuarioDto;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -8,7 +9,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Next Solucoes
@@ -48,10 +48,10 @@ public @Data class Arquivo  implements Serializable {
         this.diretorio = arquivoDto.getDiretorio();
         this.conteudo = arquivoDto.getConteudo();
         this.dataEnvio = arquivoDto.getDataEnvio();
-        if(arquivoDto.getListIdUsuarios() != null && !arquivoDto.getListIdUsuarios().isEmpty()){
+        if(arquivoDto.getListUsuarios() != null && !arquivoDto.getListUsuarios().isEmpty()){
             this.usuarios = new ArrayList<>();
-            for(Long idUsuario : arquivoDto.getListIdUsuarios()){
-                usuarios.add(new Usuario(idUsuario));
+            for(UsuarioDto usuario : arquivoDto.getListUsuarios()){
+                usuarios.add(new Usuario(usuario.getId()));
             }
         }
     }

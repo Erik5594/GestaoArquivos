@@ -48,9 +48,6 @@ public class UsuarioController {
     @Getter @Setter
     private List<GrupoDto> niveis;
 
-    @Getter @Setter
-    private GrupoDto nivelSelecionado;
-
     public void inicializar() {
         if (FacesUtil.isNotPostback()) {
             if(usuario == null){
@@ -61,30 +58,24 @@ public class UsuarioController {
     }
 
     public void salvar(){
-        usuario.setNivel(nivelSelecionado.getId());
         List<String> validacoes = usuarioService.getValidar(usuario, TITULO);
         if (validacoes == null || validacoes.isEmpty()) {
             usuarioService.salvar(usuario);
             limpar();
-            sendMensagem(SUCESSO, FacesMessage.SEVERITY_INFO);
+            FacesUtil.addInfoMessage(SUCESSO);
         } else {
             imprimirValidacoes(validacoes);
         }
     }
 
-    public void sendMensagem(String mensagem, FacesMessage.Severity nivel){
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(nivel, mensagem, null));
-    }
-
     private void limpar(){
         usuario = new UsuarioDto();
         niveis = null;
-        nivelSelecionado = new GrupoDto();
     }
 
     private void imprimirValidacoes(List<String> validcoes){
         for(String validacao : validcoes){
-            sendMensagem(validacao, FacesMessage.SEVERITY_FATAL);
+            FacesUtil.addErrorMessage(validacao);
         }
     }
 }

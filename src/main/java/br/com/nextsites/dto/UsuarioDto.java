@@ -12,7 +12,7 @@ import lombok.Data;
 public @Data class UsuarioDto {
     private Long id;
     private String nome;
-    private Long nivel;
+    private GrupoDto nivel;
     private String email;
     private String senha;
 
@@ -24,6 +24,6 @@ public @Data class UsuarioDto {
         this.nome = usuario.getNome();
         this.email = usuario.getEmail();
         this.senha = usuario.getSenha();
-        this.nivel = usuario.getNivel().getId();
+        this.nivel = new GrupoDto(usuario.getNivel());
     }
 }

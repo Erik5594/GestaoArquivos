@@ -35,9 +35,6 @@ import java.util.List;
 public class ArquivoUploadController {
 
     @Getter @Setter
-    private CategoriaDto categoriaDto;
-
-    @Getter @Setter
     private List<CategoriaDto> categorias;
 
     @Getter @Setter
@@ -76,9 +73,6 @@ public class ArquivoUploadController {
         if (FacesUtil.isNotPostback()) {
             categorias = new ArrayList<>();
             adcionarCategoria();
-            if(categoriaDto == null){
-                limpar();
-            }
         }
     }
 
@@ -134,12 +128,8 @@ public class ArquivoUploadController {
 
     public void salvar(){
         if(validar()){
-            List<Long> listIdUsuarios = new ArrayList<>();
-            for(UsuarioDto usuario : usuarios.getTarget()){
-                listIdUsuarios.add(usuario.getId());
-            }
             for(ArquivoDto arquivoDto : arquivos){
-                arquivoDto.setListIdUsuarios(listIdUsuarios);
+                arquivoDto.setListUsuarios(usuarios.getTarget());
             }
             for(ArquivoDto arquivoDto : arquivos){
                 arquivoDto.setDataEnvio(new Date());
@@ -164,7 +154,6 @@ public class ArquivoUploadController {
     }
 
     private void limpar(){
-        categoriaDto = new CategoriaDto();
         categorias = new ArrayList<>();
         adcionarCategoria();
         inicializarPickList();

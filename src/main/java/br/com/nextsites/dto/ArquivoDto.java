@@ -17,5 +17,5 @@ public @Data class ArquivoDto {
     private String diretorio;
     private byte[] conteudo;
     private Date dataEnvio;
-    private List<Long> listIdUsuarios;
+    private List<UsuarioDto> listUsuarios;
 }

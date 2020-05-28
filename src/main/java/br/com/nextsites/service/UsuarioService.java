@@ -45,7 +45,7 @@ public class UsuarioService {
                 retornoList.add(String.format(titulo, String.format(Consts.CAMPO_OBRIGATORIO, "Nome")));
             }
 
-            if(usuario.getNivel() == null || usuario.getNivel() <= 0l){
+            if(usuario.getNivel() == null || usuario.getNivel().getId() == null  || usuario.getNivel().getId() <= 0l){
                 retornoList.add(String.format(titulo, String.format(Consts.CAMPO_OBRIGATORIO, "Nível")));
             }
 
@@ -61,7 +61,7 @@ public class UsuarioService {
 
     @Transactional
     public void salvar(UsuarioDto usuarioDto){
-        usuarioDao.salvar(new Usuario(usuarioDto, usuarioDto.getNivel()));
+        usuarioDao.salvar(new Usuario(usuarioDto));
     }
 
     @Transactional
