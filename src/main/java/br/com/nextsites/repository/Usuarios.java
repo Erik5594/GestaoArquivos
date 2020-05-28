@@ -60,4 +60,8 @@ public class Usuarios implements Serializable {
         return usuarios;
     }
 
+    public List<Usuario> listarUsuarios() {
+        return this.manager.createQuery("from Usuario", Usuario.class).getResultList();
+    }
+
 }

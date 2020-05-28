@@ -73,4 +73,14 @@ public class UsuarioService {
         }
         return usuariosDto;
     }
+
+    @Transactional
+    public List<UsuarioDto> getListaUsuarios(){
+        List<UsuarioDto> usuariosDto = new ArrayList<>();
+        List<Usuario> usuarios = usuarioDao.listarUsuarios();
+        for(Usuario usuario: usuarios){
+            usuariosDto.add(new UsuarioDto(usuario));
+        }
+        return usuariosDto;
+    }
 }

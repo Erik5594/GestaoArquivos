@@ -144,11 +144,6 @@ public class ArquivoUploadController {
             for(ArquivoDto arquivoDto : arquivos){
                 arquivoDto.setDataEnvio(new Date());
                 arquivoService.salvarDocumento(arquivoDto);
-                try {
-                    Thread.sleep(2000l);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
             limpar();
             FacesUtil.addInfoMessage("Documento salvo com sucesso!");
