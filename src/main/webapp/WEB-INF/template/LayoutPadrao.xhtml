@@ -37,14 +37,17 @@
 
             <h:form style="display: inline-block">
                 <p:menubar styleClass="menu-sistema" autoDisplay="false">
-                    <p:submenu label="Cadastros">
+                    <p:submenu label="Cadastros" rendered="#{seguranca.administrador}">
                         <p:menuitem value="Usuários" outcome="/pages/usuario/CadastroUsuario"/>
                         <p:separator/>
                         <p:menuitem value="Arquivos" outcome="/pages/arquivo/UploadArquivo"/>
                     </p:submenu>
-                    <p:submenu label="Pesquisa">
+                    <p:submenu label="Pesquisa" rendered="#{seguranca.administrador}">
                         <p:menuitem value="Usuários" outcome="/pages/usuario/PesquisaUsuarios"/>
                     </p:submenu>
+                    <p:menuitem value="Minha Conta" url="/pages/usuario/CadastroUsuario" >
+                        <f:param name="usuario" value="#{seguranca.idUsuario}" />
+                    </p:menuitem>
                     <p:menuitem value="Sair" url="/logout" />
                 </p:menubar>
             </h:form>

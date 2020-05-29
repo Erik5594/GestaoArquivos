@@ -15,7 +15,7 @@
 
             <p:toolbar style="margin-top: 20px">
                 <p:toolbarGroup>
-                    <p:commandButton value="Pesquisar" update="@form" />
+                    <p:commandButton value="Pesquisar" update="@form" actionListener="#{pesquisaUsuarioController.pesquisarUsuarios}"/>
                 </p:toolbarGroup>
                 <p:toolbarGroup align="right">
                     <p:button value="Novo" outcome="/pages/usuario/CadastroUsuario" />
@@ -24,17 +24,17 @@
 
             <p:panelGrid columns="2" id="painel" style="width: 100%; margin-top: 20px"
                          columnClasses="rotulo, campo">
-                <p:outputLabel value="Email" for="sku"/>
-                <p:inputText id="sku" size="20" value="1234" />
-
                 <p:outputLabel value="Nome" for="nome"/>
-                <p:inputText id="nome" size="60" value="Erik" />
+                <p:inputText id="nome" size="40" value="#{pesquisaUsuarioController.nome}" />
+
+                <p:outputLabel value="E-mail" for="email"/>
+                <p:inputText id="email" size="40" value="#{pesquisaUsuarioController.email}" />
             </p:panelGrid>
 
             <p:dataTable id="grupoTable" value="#{pesquisaUsuarioController.usuarios}" var="usuario"
                          style="margin-top: 20px" emptyMessage="Nenhum usuario encontrado." rows="20"
                          paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom">
-                <p:column headerText="ID" style="text-align: center; width: 100px">
+                <p:column headerText="Cód" style="text-align: center; width: 100px">
                     <h:outputText value="#{usuario.id}" />
                 </p:column>
                 <p:column headerText="Nome">
@@ -43,24 +43,27 @@
                 <p:column headerText="E-mail" style="text-align: center;">
                     <h:outputText value="#{usuario.email}" />
                 </p:column>
+                <p:column headerText="Nível" style="text-align: center;">
+                    <h:outputText value="#{usuario.nivel.nome}" />
+                </p:column>
                 <p:column style="width: 100px;" headerText="Ações">
                     <p:button outcome="/pages/usuario/CadastroUsuario" icon="ui-icon-pencil" title="Editar">
                         <f:param name="usuario" value="#{usuario.id}" />
                     </p:button>
                     <p:commandButton icon="ui-icon-trash" title="Excluir" oncomplete="PF('confirmacaoExclusao').show()"
                                      process="@this" update=":frmPesquisa:confirmacaoExclusaoDialog">
-                        <f:setPropertyActionListener target="#{usuarioController.usuario}"
+                        <f:setPropertyActionListener target="#{pesquisaUsuarioController.usuarioDto}"
                                                      value="#{usuario}" />
                     </p:commandButton>
                 </p:column>
             </p:dataTable>
 
-            <p:confirmDialog header="Exclusão de produto"
-                             message="Tem certeza que deseja excluir o produto ?"
+            <p:confirmDialog header="Exclusão de usuario"
+                             message="Tem certeza que deseja excluir o usuário #{pesquisaUsuarioController.usuarioDto.nome} ?"
                              widgetVar="confirmacaoExclusao"	id="confirmacaoExclusaoDialog">
                 <p:button value="Não" onclick="PF('confirmacaoExclusao').hide(); return false;" />
                 <p:commandButton value="Sim" oncomplete="PF('confirmacaoExclusao').hide();"
-                                 action="#{usuarioController.salvar}" process="@this"
+                                 action="#{pesquisaUsuarioController.remover}" process="@this"
                                  update=":frmPesquisa:grupoTable" id="yesButton" />
             </p:confirmDialog>
         </h:form>

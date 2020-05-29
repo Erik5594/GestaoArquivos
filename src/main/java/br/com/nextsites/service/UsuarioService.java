@@ -22,12 +22,10 @@ public class UsuarioService {
     @Inject
     private Usuarios usuarioDao;
 
-    @Transactional
     public UsuarioDto getUsuarioPorEmail(String email){
         return new UsuarioDto(usuarioDao.porEmail(email));
     }
 
-    @Transactional
     public UsuarioDto getUsuarioById(Long id){
         return new UsuarioDto(usuarioDao.porId(id));
     }
@@ -59,12 +57,10 @@ public class UsuarioService {
         return retornoList;
     }
 
-    @Transactional
     public void salvar(UsuarioDto usuarioDto){
         usuarioDao.salvar(new Usuario(usuarioDto));
     }
 
-    @Transactional
     public List<UsuarioDto> getListaClientes(){
         List<UsuarioDto> usuariosDto = new ArrayList<>();
         List<Usuario> usuarios = usuarioDao.listarClientes();
@@ -74,7 +70,6 @@ public class UsuarioService {
         return usuariosDto;
     }
 
-    @Transactional
     public List<UsuarioDto> getListaUsuarios(){
         List<UsuarioDto> usuariosDto = new ArrayList<>();
         List<Usuario> usuarios = usuarioDao.listarUsuarios();
@@ -82,5 +77,20 @@ public class UsuarioService {
             usuariosDto.add(new UsuarioDto(usuario));
         }
         return usuariosDto;
+    }
+
+    public List<UsuarioDto> getUsuarioFiltrados(String nome, String email){
+        List<UsuarioDto> usuariosDto = new ArrayList<>();
+        List<Usuario> usuariosFiltrados = usuarioDao.filtrados(nome, email);
+        if(usuariosFiltrados != null) {
+            for (Usuario usuario : usuariosFiltrados) {
+                usuariosDto.add(new UsuarioDto(usuario));
+            }
+        }
+        return usuariosDto;
+    }
+
+    public void remover(UsuarioDto usuario){
+        usuarioDao.remover(new Usuario(usuario));
     }
 }

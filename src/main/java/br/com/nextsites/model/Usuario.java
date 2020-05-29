@@ -34,6 +34,10 @@ public @Data class Usuario implements Serializable {
     @Column(nullable = false, length = 20)
     private String senha;
 
+    @Enumerated(EnumType.ORDINAL)
+    @Column(nullable = false)
+    private StatusUsuario status = StatusUsuario.ATIVO;
+
     @ManyToOne (cascade = CascadeType.ALL)
     @JoinColumn(name = "nivel_id")
     private Grupo nivel;
@@ -49,6 +53,7 @@ public @Data class Usuario implements Serializable {
     }
 
     public Usuario(UsuarioDto usuarioDto) {
+        this.id = usuarioDto.getId();
         this.nome = usuarioDto.getNome();
         this.email = usuarioDto.getEmail();
         this.senha = usuarioDto.getSenha();

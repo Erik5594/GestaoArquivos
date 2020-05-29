@@ -2,20 +2,12 @@ package br.com.nextsites.controller;
 
 import br.com.nextsites.dto.GrupoDto;
 import br.com.nextsites.dto.UsuarioDto;
-import br.com.nextsites.model.Grupo;
-import br.com.nextsites.repository.Usuarios;
 import br.com.nextsites.service.GrupoService;
 import br.com.nextsites.service.UsuarioService;
-import br.com.nextsites.util.Consts;
 import br.com.nextsites.util.jsf.FacesUtil;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -48,13 +40,18 @@ public class UsuarioController {
     @Getter @Setter
     private List<GrupoDto> niveis;
 
+    @Getter @Setter
+    private String senhaAtual;
+
+    public UsuarioController() {
+        limpar();
+    }
+
     public void inicializar() {
-        if (FacesUtil.isNotPostback()) {
-            if(usuario == null){
-                limpar();
-            }
-            niveis = nivelService.getGrupos();
+        if(usuario == null){
+            limpar();
         }
+        niveis = nivelService.getGrupos();
     }
 
     public void salvar(){
@@ -77,5 +74,15 @@ public class UsuarioController {
         for(String validacao : validcoes){
             FacesUtil.addErrorMessage(validacao);
         }
+    }
+
+    public boolean isEditando(){
+        return this.usuario.getId() != null;
+    }
+
+    public void resetarSenha(){
+        usuario.setSenha("1234");
+        usuarioService.salvar(usuario);
+        FacesUtil.addInfoMessage("Senha resetada com sucesso!");
     }
 }

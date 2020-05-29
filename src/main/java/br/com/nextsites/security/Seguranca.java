@@ -20,6 +20,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 @RequestScoped
 public class Seguranca  {
 
+    @Inject
+    private ExternalContext externalContext;
+
     public String getNomeUsuario() {
         String nome = null;
 
@@ -30,6 +33,18 @@ public class Seguranca  {
         }
 
         return nome;
+    }
+
+    public Long getIdUsuario() {
+        Long id = null;
+
+        UsuarioSistema usuarioLogado = getUsuarioLogado();
+
+        if (usuarioLogado != null) {
+            id = usuarioLogado.getUsuario().getId();
+        }
+
+        return id;
     }
 
     @Produces
@@ -45,5 +60,9 @@ public class Seguranca  {
         }
 
         return usuario;
+    }
+
+    public boolean isAdministrador(){
+        return externalContext.isUserInRole("ADMINISTRADOR");
     }
 }
