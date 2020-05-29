@@ -45,8 +45,7 @@ public class Usuarios implements Serializable {
         Usuario usuario = null;
 
         try {
-            usuario = this.manager.createQuery("from Usuario where lower(email) = :email and status = :status", Usuario.class)
-                    .setParameter("status",StatusUsuario.ATIVO)
+            usuario = this.manager.createQuery("from Usuario where lower(email) = :email", Usuario.class)
                     .setParameter("email", email.toLowerCase()).getSingleResult();
         } catch (NoResultException e) {
             // nenhum usuário encontrado com o e-mail informado
@@ -78,8 +77,7 @@ public class Usuarios implements Serializable {
 
     @Transactional
     public List<Usuario> listarUsuarios() {
-        return this.manager.createQuery("from Usuario where status = :status", Usuario.class)
-                .setParameter("status",StatusUsuario.ATIVO)
+        return this.manager.createQuery("from Usuario", Usuario.class)
                 .getResultList();
     }
 
@@ -87,7 +85,7 @@ public class Usuarios implements Serializable {
     public List<Usuario> filtrados(String nome, String email){
         Session session = manager.unwrap(Session.class);
         Criteria criteria = session.createCriteria(Usuario.class);
-        criteria.add(Restrictions.eq("status", StatusUsuario.ATIVO));
+
         if (StringUtils.isNotBlank(email)) {
             criteria.add(Restrictions.eq("email", email));
         }
@@ -102,12 +100,25 @@ public class Usuarios implements Serializable {
     @Transactional
     public void remover(Usuario usuario) throws NegocioException {
         try {
+            removerRelacionamentos(usuario.getId());
+
             usuario = porId(usuario.getId());
-            usuario.setStatus(StatusUsuario.INATIVO);
-            manager.merge(usuario);
+            manager.remove(usuario);
             manager.flush();
         } catch (PersistenceException e) {
             throw new NegocioException("Usuário não pode ser excluído.");
+        }
+    }
+
+    @Transactional
+    private void removerRelacionamentos(Long idUsuario){
+        try{
+            manager.createNativeQuery("delete from usuario_arquivo where usuario_id = :idUsuario")
+                    .setParameter("idUsuario", idUsuario)
+                    .executeUpdate();
+            manager.flush();
+        } catch (PersistenceException e) {
+            throw new NegocioException("Não foi possivel remover relacionamentos.");
         }
     }
 

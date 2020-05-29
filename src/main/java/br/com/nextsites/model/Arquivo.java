@@ -38,7 +38,7 @@ public @Data class Arquivo  implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataEnvio;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "usuario_arquivo", joinColumns = @JoinColumn(name="arquivo_id"),
             inverseJoinColumns = @JoinColumn(name = "usuario_id"))
     private List<Usuario> usuarios;

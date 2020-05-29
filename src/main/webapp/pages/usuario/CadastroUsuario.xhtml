@@ -20,7 +20,7 @@
                 <p:toolbarGroup>
                     <p:button value="Novo" outcome="CadastroUsuario"/>
 
-                    <p:commandButton value="#{usuarioController.editando ? 'Editar':'Salvar'}" id="botaoSalvar" actionListener="#{usuarioController.salvar}"
+                    <p:commandButton value="Salvar" id="botaoSalvar" actionListener="#{usuarioController.salvar}"
                                      update="frm" process="@this painel"/>
                 </p:toolbarGroup>
                 <p:toolbarGroup align="right">
@@ -34,21 +34,18 @@
                 <p:outputLabel value="Nível" for="@next"/>
                 <p:selectOneMenu id="nivel" value="#{usuarioController.usuario.nivel}"
                     required="true" requiredMessage="O campo Nível é obrigatório."
-                    filter="true" filterMatchMode="startsWith" rendered="#{seguranca.administrador}">
+                    filter="true" filterMatchMode="startsWith">
                     <f:selectItem itemLabel="Selecione o nível" />
                     <f:selectItems value="#{usuarioController.niveis}" var="nivel" itemLabel="#{nivel.nome}" itemValue="#{nivel}"/>
                 </p:selectOneMenu>
-                <p:outputLabel value="#{usuarioController.usuario.nivel.nome}" rendered="#{!seguranca.administrador}"/>
 
                 <p:outputLabel value="Nome" for="nome"/>
                 <p:inputText id="nome" size="30" maxlength="80" value="#{usuarioController.usuario.nome}"
-                             required="true" requiredMessage="O campo Nome é obrigatório." rendered="#{seguranca.administrador}"/>
-                <p:outputLabel value="#{usuarioController.usuario.nome}" rendered="#{!seguranca.administrador}"/>
+                             required="true" requiredMessage="O campo Nome é obrigatório."/>
 
                 <p:outputLabel value="E-mail" for="email"/>
                 <p:inputText id="email" size="30" value="#{usuarioController.usuario.email}"
-                             required="true" requiredMessage="O campo E-mail é obrigatório." rendered="#{seguranca.administrador}"/>
-                <p:outputLabel value="#{usuarioController.usuario.email}" rendered="#{!seguranca.administrador}"/>
+                             required="true" requiredMessage="O campo E-mail é obrigatório."/>
 
                 <p:outputLabel value="Senha" for="pwd1" rendered="#{!usuarioController.editando}"/>
                 <p:password id="pwd1" value="#{usuarioController.usuario.senha}" match="pwd2"
@@ -60,25 +57,10 @@
                 <p:password id="pwd2" value="#{usuarioController.usuario.senha}" rendered="#{!usuarioController.editando}"/>
             </h:panelGrid>
 
-            <h:panelGrid columns="2" rendered="#{usuarioController.editando}">
+            <h:panelGrid columns="2" rendered="#{usuarioController.editando}" id="panelSenha">
                 <p:outputLabel value="" rendered="#{seguranca.administrador}"/>
-                <p:commandButton value="Resetar Senha" rendered="#{seguranca.administrador}" actionListener="#{usuarioController.resetarSenha}"/>
-
-                <p:outputLabel value="Senha Atual" for="pwd3" rendered="#{!seguranca.administrador}"/>
-                <p:password id="pwd3" value="#{usuarioController.senhaAtual}" rendered="#{!seguranca.administrador}"
-                            required="true" requiredMessage="O campo Senha é obrigatório."
-                            weakLabel="Fraca" goodLabel="Bom" strongLabel="Forte" validatorMessage="Senhas não conferem"
-                            feedback="true" promptLabel="Digite uma senha"/>
-
-                <p:outputLabel value="Senha" for="pwd3" rendered="#{!seguranca.administrador}"/>
-                <p:password id="pwd4" value="#{usuarioController.usuario.senha}" match="pwd5"
-                            required="true" requiredMessage="O campo Senha é obrigatório." rendered="#{!seguranca.administrador}"
-                            weakLabel="Fraca" goodLabel="Bom" strongLabel="Forte" validatorMessage="Senhas não conferem"
-                            feedback="true" promptLabel="Digite uma senha"/>
-
-
-                <p:outputLabel value="Confirme a senha" for="pwd5" rendered="#{!seguranca.administrador}"/>
-                <p:password id="pwd5" value="#{usuarioController.usuario.senha}" rendered="#{!seguranca.administrador}"/>
+                <p:commandButton value="Resetar Senha" rendered="#{seguranca.administrador}"
+                                 actionListener="#{usuarioController.resetarSenha}" process="@this panelSenha"/>
             </h:panelGrid>
         </h:form>
     </ui:define>

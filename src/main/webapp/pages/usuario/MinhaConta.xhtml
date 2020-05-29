@@ -1,0 +1,61 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui">
+
+    <ui:define name="titulo">Minha Conta</ui:define>
+
+    <ui:define name="corpo">
+        <f:metadata>
+            <o:viewParam name="usuario" value="#{minhaContaController.usuario}" converter="usuario"/>
+            <f:event listener="#{minhaContaController.inicializar}" type="preRenderView" />
+        </f:metadata>
+        <h:form id="frm">
+            <p:messages showDetail="false" closable="true"/>
+            <h1>Minha Conta</h1>
+            <p:toolbar style="margin-top: 20px">
+                <p:toolbarGroup>
+                    <p:commandButton value="Salvar" id="botaoSalvar"
+                                     actionListener="#{minhaContaController.salvar}"
+                                     update="frm" process="@this panelSenha"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <h:panelGrid columns="2" id="painel" style="width: 100%; margin: 20px"
+                         columnClasses="rotulo, campo">
+
+                <p:outputLabel value="Nome" for="nome"/>
+                <p:outputLabel value="#{minhaContaController.usuario.nome}" id="nome"/>
+
+                <p:outputLabel value="E-mail" for="email"/>
+                <p:outputLabel value="#{minhaContaController.usuario.email}" id="email"/>
+
+            </h:panelGrid>
+            <p:panel id="panelAlterarSenha">
+            <h3 style="margin: 15px 15px">Alterar Senha</h3>
+            <h:panelGrid columns="2" id="panelSenha" style="margin-left: 20px">
+                <p:outputLabel value="Senha Atual" for="senhaAtual"/>
+                <p:password id="senhaAtual" value="#{minhaContaController.senhaAtual}" required="true"
+                            requiredMessage="O campo Senha Atual é obrigatório." promptLabel="Digite a senha atual"/>
+
+                <p:outputLabel value=""/>
+                <p:outputLabel value=""/>
+                <p:outputLabel value=""/>
+                <p:outputLabel value=""/>
+
+                <p:outputLabel value="Senha" for="pwd1"/>
+                <p:password id="pwd1" value="#{minhaContaController.usuario.senha}" match="pwd2"
+                            required="true" requiredMessage="O campo Senha é obrigatório."
+                            weakLabel="Fraca" goodLabel="Bom" strongLabel="Forte" validatorMessage="Senhas não conferem"
+                            feedback="true" promptLabel="Digite uma senha"/>
+
+                <p:outputLabel value="Confirme a senha" for="pwd2"/>
+                <p:password id="pwd2" value="#{minhaContaController.usuario.senha}"/>
+            </h:panelGrid>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>

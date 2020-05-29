@@ -38,11 +38,11 @@ public @Data class Usuario implements Serializable {
     @Column(nullable = false)
     private StatusUsuario status = StatusUsuario.ATIVO;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "nivel_id")
     private Grupo nivel;
 
-    @ManyToMany(mappedBy = "usuarios")
+    @ManyToMany(mappedBy = "usuarios", fetch = FetchType.LAZY)
     private List<Arquivo> arquivos;
 
     public Usuario() {

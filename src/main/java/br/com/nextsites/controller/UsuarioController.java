@@ -25,7 +25,6 @@ import java.util.List;
 public class UsuarioController {
 
     private static final String TITULO = "Cadastro de Usuário: %s";
-    private static final String ERRO_INTERNO = String.format(TITULO, "Ocorreu um erro interno. Contate a administração do sistema!");
     private static final String SUCESSO = String.format(TITULO, "Cadastro realizado com sucesso!");
 
     @Getter @Setter
@@ -39,9 +38,6 @@ public class UsuarioController {
 
     @Getter @Setter
     private List<GrupoDto> niveis;
-
-    @Getter @Setter
-    private String senhaAtual;
 
     public UsuarioController() {
         limpar();

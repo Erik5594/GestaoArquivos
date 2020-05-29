@@ -30,6 +30,10 @@ public class UsuarioService {
         return new UsuarioDto(usuarioDao.porId(id));
     }
 
+    public String getSenhaUsuario(Long id){
+        return new UsuarioDto(usuarioDao.porId(id)).getSenha();
+    }
+
     public List<String> getValidar(UsuarioDto usuario, String titulo){
         List<String> retornoList = new ArrayList<>();
         if(usuario != null){
