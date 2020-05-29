@@ -1,7 +1,10 @@
 package br.com.nextsites.dto;
 
+import br.com.nextsites.model.Arquivo;
+import br.com.nextsites.model.Usuario;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,4 +21,21 @@ public @Data class ArquivoDto {
     private byte[] conteudo;
     private Date dataEnvio;
     private List<UsuarioDto> listUsuarios;
+
+    public ArquivoDto() {
+    }
+
+    public ArquivoDto(Arquivo arquivo) {
+        this.id = arquivo.getId();
+        this.nome = arquivo.getNome();
+        this.diretorio = arquivo.getDiretorio();
+        this.conteudo = arquivo.getConteudo();
+        this.dataEnvio = arquivo.getDataEnvio();
+        if(arquivo.getUsuarios() != null){
+            this.listUsuarios = new ArrayList<>();
+            for(Usuario usuario : arquivo.getUsuarios()) {
+                listUsuarios.add(new UsuarioDto(usuario));
+            }
+        }
+    }
 }

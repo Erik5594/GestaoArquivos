@@ -2,6 +2,7 @@ package br.com.nextsites.controller;
 
 import br.com.nextsites.dto.ArquivoDto;
 import br.com.nextsites.dto.CategoriaDto;
+import br.com.nextsites.dto.PermissaoDto;
 import br.com.nextsites.dto.UsuarioDto;
 import br.com.nextsites.service.ArquivoService;
 import br.com.nextsites.service.UsuarioService;
@@ -128,14 +129,26 @@ public class ArquivoUploadController {
 
     public void salvar(){
         if(validar()){
+            List<UsuarioDto> usuarioComPermissao = usuarios.getTarget();
+            List<PermissaoDto> adcionarPermissoes = new ArrayList<>();
+
+            List<UsuarioDto> usuarioSemPermissao = usuarios.getSource();
+            List<PermissaoDto> removerPermissoes = new ArrayList<>();
+
             for(ArquivoDto arquivoDto : arquivos){
-                arquivoDto.setListUsuarios(usuarios.getTarget());
+                for(UsuarioDto usuario : usuarioComPermissao){
+                    adcionarPermissoes.add(new PermissaoDto(usuario.getId(), arquivoDto.getId()));
+                }
+                for(UsuarioDto usuario : usuarioSemPermissao){
+                    removerPermissoes.add(new PermissaoDto(usuario.getId(), arquivoDto.getId()));
+                }
             }
-            for(ArquivoDto arquivoDto : arquivos){
-                arquivoDto.setDataEnvio(new Date());
-                arquivoService.salvarDocumento(arquivoDto);
-            }
+
+            arquivoService.incluirPermissoes(adcionarPermissoes);
+            arquivoService.removerPermissoes(removerPermissoes);
+
             limpar();
+
             FacesUtil.addInfoMessage("Documento salvo com sucesso!");
         }
     }
@@ -184,6 +197,8 @@ public class ArquivoUploadController {
         arquivoDto.setNome(file.getFileName());
         arquivoDto.setDiretorio(caminhoConcluido);
         arquivoDto.setConteudo(file.getContent());
+        arquivoDto.setDataEnvio(new Date());
+        arquivoDto = arquivoService.salvarDocumento(arquivoDto);
         arquivos.add(arquivoDto);
     }
 }

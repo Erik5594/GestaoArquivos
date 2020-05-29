@@ -20,7 +20,6 @@ public class GrupoService {
     @Inject
     private Grupos grupoDao;
 
-    @Transactional
     public List<GrupoDto> getGrupos(){
         List<GrupoDto> gruposDto = new ArrayList<>();
         List<Grupo> gruposModel = grupoDao.getGrupos();
@@ -32,7 +31,6 @@ public class GrupoService {
         return gruposDto;
     }
 
-    @Transactional
     public GrupoDto getGrupoById(Long id){
         return new GrupoDto(grupoDao.porId(id));
     }

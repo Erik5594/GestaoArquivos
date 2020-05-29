@@ -2,6 +2,7 @@ package br.com.nextsites.repository;
 
 import br.com.nextsites.model.Grupo;
 import br.com.nextsites.model.Usuario;
+import br.com.nextsites.util.jpa.Transactional;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -20,10 +21,12 @@ public class Grupos implements Serializable {
     @Inject
     private EntityManager manager;
 
+    @Transactional
     public List<Grupo> getGrupos(){
         return manager.createQuery("from Grupo", Grupo.class).getResultList();
     }
 
+    @Transactional
     public Grupo porId(Long id) {
         return this.manager.find(Grupo.class, id);
     }

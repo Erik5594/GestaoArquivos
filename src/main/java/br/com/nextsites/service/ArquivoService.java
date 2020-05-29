@@ -1,6 +1,8 @@
 package br.com.nextsites.service;
 
 import br.com.nextsites.dto.ArquivoDto;
+import br.com.nextsites.dto.PermissaoDto;
+import br.com.nextsites.dto.UsuarioDto;
 import br.com.nextsites.model.Arquivo;
 import br.com.nextsites.repository.Arquivos;
 import br.com.nextsites.repository.Usuarios;
@@ -28,9 +30,6 @@ public class ArquivoService {
     private FileUtil fileUtil;
 
     @Inject
-    private Usuarios usuarioDao;
-
-    @Inject
     private Arquivos arquivoDao;
 
     public List<String> nomePastas(String diretorio, String startNome){
@@ -51,17 +50,34 @@ public class ArquivoService {
         fileUtil.gravarArquivo(arquivo, file.getContent());
         String conteudo = fileUtil.getConteudo(arquivo);
         fileUtil.gravarArquivoTxt(arquivo+".txt", conteudo);
+        fileUtil.deletarArquivo(arquivo);
     }
 
-    public void salvarVariosDocumentos(List<ArquivoDto> arquivoDtoList){
-        for(ArquivoDto arquivoDto : arquivoDtoList){
-            arquivoDto.setDataEnvio(new Date());
-            salvarDocumento(arquivoDto);
+    public void incluirPermissoes(List<PermissaoDto> permissoes){
+        for(PermissaoDto permissao : permissoes){
+            arquivoDao.incluirPermissao(permissao.getIdArquivo(), permissao.getIdUsuario());
         }
     }
 
-    @Transactional
-    public void salvarDocumento(ArquivoDto arquivoDto){
-        arquivoDao.salvar(new Arquivo(arquivoDto));
+    public void removerPermissoes(List<PermissaoDto> permissoes){
+        for(PermissaoDto permissao : permissoes){
+            arquivoDao.removerPermissao(permissao.getIdArquivo(), permissao.getIdUsuario());
+        }
+    }
+
+    public ArquivoDto salvarDocumento(ArquivoDto arquivoDto){
+        return new ArquivoDto(arquivoDao.salvar(new Arquivo(arquivoDto)));
+    }
+
+    public List<ArquivoDto> getTodosArquivos(){
+        List<Arquivo> arquivos = arquivoDao.getArquivos();
+        List<ArquivoDto> arquivosDto = null;
+        if(arquivos != null){
+            arquivosDto = new ArrayList<>();
+            for(Arquivo arquivo : arquivos){
+                arquivosDto.add(new ArquivoDto(arquivo));
+            }
+        }
+        return arquivosDto;
     }
 }

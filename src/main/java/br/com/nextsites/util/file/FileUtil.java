@@ -70,4 +70,9 @@ public class FileUtil {
             }
         }
     }
+
+    public void deletarArquivo(String diretorio){
+        File file = new File(PRINCIPAL+diretorio);
+        file.delete();
+    }
 }

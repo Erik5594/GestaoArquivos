@@ -38,22 +38,17 @@ public @Data class Arquivo  implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataEnvio;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usuario_arquivo", joinColumns = @JoinColumn(name="arquivo_id"),
             inverseJoinColumns = @JoinColumn(name = "usuario_id"))
     private List<Usuario> usuarios;
 
     public Arquivo(ArquivoDto arquivoDto) {
+        this.id = arquivoDto.getId();
         this.nome = arquivoDto.getNome();
         this.diretorio = arquivoDto.getDiretorio();
         this.conteudo = arquivoDto.getConteudo();
         this.dataEnvio = arquivoDto.getDataEnvio();
-        if(arquivoDto.getListUsuarios() != null && !arquivoDto.getListUsuarios().isEmpty()){
-            this.usuarios = new ArrayList<>();
-            for(UsuarioDto usuario : arquivoDto.getListUsuarios()){
-                usuarios.add(new Usuario(usuario.getId()));
-            }
-        }
     }
 
     public Arquivo() {

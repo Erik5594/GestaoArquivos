@@ -42,7 +42,7 @@ public @Data class Usuario implements Serializable {
     @JoinColumn(name = "nivel_id")
     private Grupo nivel;
 
-    @ManyToMany(mappedBy = "usuarios", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "usuarios", fetch = FetchType.EAGER)
     private List<Arquivo> arquivos;
 
     public Usuario() {
