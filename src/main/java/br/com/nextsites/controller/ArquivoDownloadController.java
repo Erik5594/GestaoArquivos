@@ -104,4 +104,17 @@ public class ArquivoDownloadController {
             FacesUtil.addErrorMessage("Deve ser selecionado um arquivo para exclusão");
         }
     }
+
+    public void pesquisar(){
+        if(StringUtils.isNotBlank(pesquisa) && pesquisa.length() > 2) {
+            Long idUsuario = null;
+            if (!seguranca.isAdministrador()) {
+                idUsuario = seguranca.getIdUsuario();
+            }
+            arquivos = arquivoService.pesquisarGeral(pesquisa, idUsuario);
+        }else{
+            init();
+            FacesUtil.addErrorMessage("É obrigatório digitar pelo menos 3 caracteres para realizar a pesquisa!");
+        }
+    }
 }

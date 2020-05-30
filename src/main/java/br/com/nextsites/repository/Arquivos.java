@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +35,17 @@ public class Arquivos  implements Serializable {
 
     @Transactional
     public List<Arquivo> getArquivos(Long idUsuario){
-        return manager.createNativeQuery("select a.* " +
-                " from arquivo a " +
-                " inner join usuario_arquivo ua " +
-                " on a.id = ua.arquivo_id " +
-                " where ua.usuario_id = :idUsuario", Arquivo.class)
-                .setParameter("idUsuario", idUsuario)
-                .getResultList();
+        try {
+            return manager.createNativeQuery("select a.* " +
+                    " from arquivo a " +
+                    " inner join usuario_arquivo ua " +
+                    " on a.id = ua.arquivo_id " +
+                    " where ua.usuario_id = :idUsuario", Arquivo.class)
+                    .setParameter("idUsuario", idUsuario)
+                    .getResultList();
+        } catch (NoResultException e){
+            return null;
+        }
     }
 
     @Transactional
@@ -141,5 +146,32 @@ public class Arquivos  implements Serializable {
     @Transactional
     public Arquivo porId(Long id) {
         return this.manager.find(Arquivo.class, id);
+    }
+
+    @Transactional
+    public List<Arquivo> porNome(String nome, Long idUsuario) {
+        String query1 = " select a.* from arquivo a " +
+                " where upper(a.nome) ilike :pesquisa ";
+
+        String query2 = query1 +
+                " and exists (select 1 " +
+                " from usuario_arquivo ua " +
+                " where ua.arquivo_id = a.id " +
+                " and ua.usuario_id = :idUsuario) ";
+
+        try {
+            if(idUsuario != null && idUsuario > 0l){
+                return this.manager.createNativeQuery(query2, Arquivo.class)
+                        .setParameter("pesquisa", "%"+nome.toUpperCase()+"%")
+                        .setParameter("idUsuario", idUsuario)
+                        .getResultList();
+            }else{
+                return this.manager.createNativeQuery(query1, Arquivo.class)
+                        .setParameter("pesquisa", "%"+nome.toUpperCase()+"%")
+                        .getResultList();
+            }
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

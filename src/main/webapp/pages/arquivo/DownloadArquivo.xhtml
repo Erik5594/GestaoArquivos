@@ -15,7 +15,7 @@
 
             <p:toolbar style="margin-top: 20px">
                 <p:toolbarGroup>
-                    <p:commandButton value="Pesquisar" update="@form" />
+                    <p:commandButton value="Pesquisar" update="@form" actionListener="#{arquivoDownloadController.pesquisar()}"/>
                 </p:toolbarGroup>
                 <p:toolbarGroup align="right" rendered="#{seguranca.administrador}">
                     <p:button value="Novo" outcome="/pages/arquivo/UploadArquivo" />
@@ -27,6 +27,7 @@
 
                 <p:outputLabel value="Pesquisar por:" for="nome"/>
                 <p:inputText id="nome" size="60" value="#{arquivoDownloadController.pesquisa}"
+                             onkeyup="this.value = this.value.toUpperCase()"
                              placeholder="Nome do Arquivo, parte do conteudo do arquivo..."/>
 
             </h:panelGrid>
@@ -72,7 +73,9 @@
 
             <p:dialog header="Gerenciar Permissões" widgetVar="permissoes" modal="true" height="400" dynamic="true"
                       resizable="false" draggable="false" id="gerenciarPermissoes" responsive="true" width="800">
-                Arquivo: <strong>#{arquivoDownloadController.arquivo.nome}</strong>
+                Categoria: <strong>#{arquivoDownloadController.arquivo.diretorio.toUpperCase()}</strong>
+                <br/>
+                Arquivo: <strong>#{arquivoDownloadController.arquivo.nome.toUpperCase()}</strong>
                 <p:pickList id="pickList" value="#{arquivoDownloadController.usuariosPick}" showCheckbox="true" responsive="true"
                             var="usuario" itemLabel="#{usuario.nome}" itemValue="#{usuario}" filterMatchMode="contains"
                             style="margin-bottom: 15px; margin-top: 15px"

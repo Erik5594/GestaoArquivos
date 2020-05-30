@@ -33,6 +33,9 @@ public class ArquivoService {
     @Inject
     private Arquivos arquivoDao;
 
+    @Inject
+    private UsuarioService usuarioService;
+
     public List<String> nomePastas(String diretorio, String startNome){
         List<String> pastas = new ArrayList<>();
         String start = StringUtils.isBlank(startNome) ? "":startNome;
@@ -76,46 +79,81 @@ public class ArquivoService {
     }
 
     public List<ArquivoDto> getTodosArquivos(Long idUsuario){
-        List<Arquivo> arquivos;
         if(idUsuario != null && idUsuario > 0l){
-            arquivos = arquivoDao.getArquivos(idUsuario);
+            return converterListArquivo(arquivoDao.getArquivos(idUsuario));
         }else{
-            arquivos = arquivoDao.getArquivos();
+            return converterListArquivo(arquivoDao.getArquivos());
         }
+    }
+
+    public List<UsuarioDto> getUsuariosDoArquivo(Long idArquivo){
+        List<Usuario> usuarios = arquivoDao.getUsuariosComAcesso(idArquivo);
+        return usuarioService.converterListUsuario(usuarios);
+    }
+
+    public List<UsuarioDto> getUsuariosSemPermissao(Long idArquivo){
+        List<Usuario> usuarios = arquivoDao.getUsuariosSemPermissao(idArquivo);
+        return usuarioService.converterListUsuario(usuarios);
+    }
+
+
+
+    public void deletarArquivo(ArquivoDto arquivoDto){
+        String arquivo = arquivoDto.getDiretorio()+arquivoDto.getNome()+".txt";
+        fileUtil.deletarArquivo(arquivo);
+        arquivoDao.remover(new Arquivo(arquivoDto));
+    }
+
+    public List<ArquivoDto> pesquisarGeral(String textoPesquisado, Long idUsuario){
+        List<ArquivoDto> todosArquivos;
+        List<ArquivoDto> arquivosEncontrados = new ArrayList<>();
+
+        if(idUsuario != null && idUsuario > 0l){
+            todosArquivos = converterListArquivo(arquivoDao.getArquivos(idUsuario));
+        }else{
+            todosArquivos = converterListArquivo(arquivoDao.getArquivos());
+        }
+
+        List<ArquivoDto> todosArquivosNome = pesquisarNome(textoPesquisado, idUsuario);
+        todosArquivos.removeAll(todosArquivosNome);
+        arquivosEncontrados.addAll(todosArquivosNome);
+
+        List<ArquivoDto> todosArquivosConteudo = pesquisarConteudo(todosArquivos, textoPesquisado);
+        if(arquivosEncontrados.containsAll(todosArquivosConteudo)){
+            for(ArquivoDto arquivo : todosArquivosConteudo){
+                if(!arquivosEncontrados.contains(arquivo)){
+                    arquivosEncontrados.add(arquivo);
+                }
+            }
+        }else{
+            arquivosEncontrados.addAll(todosArquivosConteudo);
+        }
+        return arquivosEncontrados;
+    }
+
+    public List<ArquivoDto> pesquisarNome(String textoPesquisado, Long idUsuario){
+        return converterListArquivo(arquivoDao.porNome(textoPesquisado, idUsuario));
+    }
+
+    public List<ArquivoDto> pesquisarConteudo(List<ArquivoDto> arquivosQueDevemSerPesquisados, String texto){
+        List<ArquivoDto> contemConteudo = new ArrayList<>();
+        for(ArquivoDto arquivoDto : arquivosQueDevemSerPesquisados){
+            String diretorio = arquivoDto.getDiretorio()+arquivoDto.getNome()+".txt";
+            if(fileUtil.contemTexto(diretorio, texto)){
+                contemConteudo.add(arquivoDto);
+            }
+        }
+        return contemConteudo;
+    }
+
+    private List<ArquivoDto> converterListArquivo(List<Arquivo> arquivos){
         List<ArquivoDto> arquivosDto = null;
-        if(arquivos != null){
+        if(arquivos!= null){
             arquivosDto = new ArrayList<>();
             for(Arquivo arquivo : arquivos){
                 arquivosDto.add(new ArquivoDto(arquivo));
             }
         }
         return arquivosDto;
-    }
-
-    public List<UsuarioDto> getUsuariosDoArquivo(Long idArquivo){
-        List<Usuario> usuarios = arquivoDao.getUsuariosComAcesso(idArquivo);
-        return converterListUsuario(usuarios);
-    }
-
-    public List<UsuarioDto> getUsuariosSemPermissao(Long idArquivo){
-        List<Usuario> usuarios = arquivoDao.getUsuariosSemPermissao(idArquivo);
-        return converterListUsuario(usuarios);
-    }
-
-    private List<UsuarioDto> converterListUsuario(List<Usuario> usuarios){
-        List<UsuarioDto> usuariosDto = null;
-        if(usuarios != null){
-            usuariosDto = new ArrayList<>();
-            for(Usuario usuario : usuarios){
-                usuariosDto.add(new UsuarioDto(usuario));
-            }
-        }
-        return usuariosDto;
-    }
-
-    public void deletarArquivo(ArquivoDto arquivoDto){
-        String arquivo = arquivoDto.getDiretorio()+arquivoDto.getNome()+".txt";
-        fileUtil.deletarArquivo(arquivo);
-        arquivoDao.remover(new Arquivo(arquivoDto));
     }
 }

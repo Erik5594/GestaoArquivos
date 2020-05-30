@@ -1,5 +1,6 @@
 package br.com.nextsites.util.file;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -74,5 +75,38 @@ public class FileUtil {
     public void deletarArquivo(String diretorio){
         File file = new File(PRINCIPAL+diretorio);
         file.delete();
+    }
+
+    public boolean contemTexto(String diretorio, String texto){
+
+        try{
+            FileReader fileReader = new FileReader(PRINCIPAL+diretorio);
+            BufferedReader lerArq = new BufferedReader(fileReader);
+            String linha = lerArq.readLine();
+            if(linha.contains(texto)){
+                lerArq.close();
+                fileReader.close();
+                return true;
+            }
+
+            StringBuilder conteudo = new StringBuilder(linha);
+            while (linha != null){
+                linha = lerArq.readLine();
+                if(StringUtils.isNotBlank(linha)){
+                    if(linha.contains(texto)){
+                        lerArq.close();
+                        fileReader.close();
+                        return true;
+                    }
+                    conteudo.append(linha);
+                }
+            }
+            lerArq.close();
+            fileReader.close();
+            return conteudo.toString().contains(texto);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

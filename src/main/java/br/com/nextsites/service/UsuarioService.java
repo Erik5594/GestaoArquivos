@@ -97,4 +97,15 @@ public class UsuarioService {
     public void remover(UsuarioDto usuario){
         usuarioDao.remover(new Usuario(usuario));
     }
+
+    public List<UsuarioDto> converterListUsuario(List<Usuario> usuarios){
+        List<UsuarioDto> usuariosDto = null;
+        if(usuarios != null){
+            usuariosDto = new ArrayList<>();
+            for(Usuario usuario : usuarios){
+                usuariosDto.add(new UsuarioDto(usuario));
+            }
+        }
+        return usuariosDto;
+    }
 }
