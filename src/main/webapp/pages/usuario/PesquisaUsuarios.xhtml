@@ -47,7 +47,9 @@
                     <h:outputText value="#{usuario.nivel.nome}" />
                 </p:column>
                 <p:column style="width: 100px;" headerText="Ações">
-                    <p:button outcome="/pages/usuario/CadastroUsuario" icon="ui-icon-pencil" title="Editar">
+                <center>
+                    <p:button outcome="/pages/usuario/CadastroUsuario" icon="ui-icon-pencil"
+                              title="Editar" style="margin-right: 7px">
                         <f:param name="usuario" value="#{usuario.id}" />
                     </p:button>
                     <p:commandButton icon="ui-icon-trash" title="Excluir" oncomplete="PF('confirmacaoExclusao').show()"
@@ -55,6 +57,7 @@
                         <f:setPropertyActionListener target="#{pesquisaUsuarioController.usuarioDto}"
                                                      value="#{usuario}" />
                     </p:commandButton>
+                </center>
                 </p:column>
             </p:dataTable>
 

@@ -50,11 +50,13 @@ public class ArquivoService {
         if(StringUtils.isBlank(diretorio)){
             diretorio = "";
         }
-        String arquivo = diretorio + file.getFileName();
-        fileUtil.gravarArquivo(arquivo, file.getContent());
-        String conteudo = fileUtil.getConteudo(arquivo);
-        fileUtil.gravarArquivoTxt(arquivo+".txt", conteudo);
-        fileUtil.deletarArquivo(arquivo);
+        if(arquivoDao.buscarNomeAndCategoria(file.getFileName(), diretorio) == null) {
+            String arquivo = diretorio + file.getFileName();
+            fileUtil.gravarArquivo(arquivo, file.getContent());
+            String conteudo = fileUtil.getConteudo(arquivo);
+            fileUtil.gravarArquivoTxt(arquivo + ".txt", conteudo);
+            fileUtil.deletarArquivo(arquivo);
+        }
     }
 
     public void incluirPermissoes(List<PermissaoDto> permissoes){

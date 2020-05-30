@@ -49,10 +49,17 @@
             </p:panel>
             <p:panel id="upload" header="Carregar Arquivos para seguinte categoria >>> #{arquivoUploadController.caminhoConcluido}"
                      style="margin-bottom: 20px" rendered="#{arquivoUploadController.exibirUploadFiles}">
-                <p:fileUpload listener="#{arquivoUploadController.carregarArquivo}" update="frm"
-                              mode="advanced" dragDropSupport="false" label="Selecionar"
-                              multiple="true" sizeLimit="10000000" fileLimit="100" allowTypes="/(\.|\/)(pdf)$/"
-                              cancelLabel="Cancelar"/>
+                <p:fileUpload listener="#{arquivoUploadController.carregarArquivo}"
+                              dragDropSupport="false" label="Selecione até 100 arquivos" cancelLabel="Cancelar"
+                              fileLimitMessage="Número maximo de arquivos excedido, será carregado apenas 100!" multiple="true"
+                              sizeLimit="10000000" fileLimit="100" allowTypes="/(\.|\/)(pdf)$/"/>
+                <ul>
+                    <li><font style="color: red">A opção <strong>Gerenciar Permissões</strong> só deve ser clicada quando for finalizado o carregamento de todos arquivos.</font></li>
+                </ul>
+                <center>
+                    <p:commandButton value="Gerenciar Permissões" process="@this upload"  update="frm" style="margin: 15px"
+                                     actionListener="#{arquivoUploadController.gerenciarPermissoes}"/>
+                </center>
             </p:panel>
             <p:panel id="permisao" header="Cliente(s) que poderão acessar o(s) arquivo(s)"
                      style="margin-bottom: 20px" rendered="#{arquivoUploadController.exibirPermissao}">
@@ -63,7 +70,10 @@
                     <f:facet name="targetCaption">Com permissão</f:facet>
                 </p:pickList>
 
-                <p:dataTable value="#{arquivoUploadController.arquivos}" var="file">
+                <p:dataTable value="#{arquivoUploadController.arquivos}" var="file" paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} arquivos"
+                             rows="10" rowsPerPageTemplate="5,10,20,50">
                     <p:column headerText="Arquivos">
                         <h:outputText value="#{file.nome}" />
                     </p:column>

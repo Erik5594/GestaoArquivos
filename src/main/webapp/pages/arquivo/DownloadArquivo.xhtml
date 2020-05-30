@@ -33,21 +33,25 @@
             </h:panelGrid>
 
             <p:dataTable id="arquivosTable" value="#{arquivoDownloadController.arquivos}" var="arquivo"
-                         style="margin-top: 20px; margin-left: 3px" emptyMessage="Nenhum arquivo encontrado." rows="20"
-                         paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom">
+                         style="margin-top: 20px; margin-left: 3px" emptyMessage="Nenhum arquivo encontrado."
+                         rows="10" rowsPerPageTemplate="5,10,20,50" paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} arquivos">
                 <p:column headerText="Nome">
                     <h:outputText value="#{arquivo.nome}" />
                 </p:column>
                 <p:column headerText="Categoria" style="text-align: center;">
                     <h:outputText value="#{arquivo.diretorio}" />
                 </p:column>
-                <p:column style="width: 100px;" headerText="Ações">
-                    <p:commandButton ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="pi pi-download" title="Baixar/Download">
+                <p:column style="width: 120px;" headerText="Ações">
+                    <center>
+                    <p:commandButton ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
+                                     icon="pi pi-download" title="Baixar/Download" style="margin-right: 7px">
                         <p:fileDownload value="#{arquivo.file}" />
                     </p:commandButton>
 
                     <p:commandButton icon="pi pi-lock" onsuccess="PF('permissoes').show();" process="@this arquivosTable"
-                                     rendered="#{seguranca.administrador}" update="frmPesquisa"
+                                     rendered="#{seguranca.administrador}" update="frmPesquisa" style="margin-right: 7px"
                                      actionListener="#{arquivoDownloadController.buscarUsuarios(arquivo.id)}">
                         <f:setPropertyActionListener target="#{arquivoDownloadController.arquivo}"
                                                      value="#{arquivo}" />
@@ -59,6 +63,7 @@
                         <f:setPropertyActionListener target="#{arquivoDownloadController.arquivo}"
                                                      value="#{arquivo}" />
                     </p:commandButton>
+                    </center>
                 </p:column>
             </p:dataTable>
 

@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.file.UploadedFile;
+import org.primefaces.model.file.UploadedFiles;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -56,6 +57,8 @@ public class ArquivoUploadController {
     private boolean exibirUploadFiles = false;
     @Getter @Setter
     private boolean exibirPermissao = false;
+    @Getter @Setter
+    private boolean continuar = false;
     @Getter @Setter
     private List<ArquivoDto> arquivos;
 
@@ -114,6 +117,7 @@ public class ArquivoUploadController {
             exibirCategoria = false;
             exibirUploadFiles = true;
             exibirPermissao = false;
+            FacesUtil.addWarnMessage("A opção 'Gerenciar Permissões' só deve ser clicada quando for finalizado o carregamento de todos arquivos.");
         }
     }
 
@@ -152,9 +156,10 @@ public class ArquivoUploadController {
             retorno = false;
             FacesUtil.addErrorMessage("Nenhum arquivo carregado!");
         }
-        if(usuarios.getTarget() == null || usuarios.getTarget().isEmpty()){
+        if((usuarios.getTarget() == null || usuarios.getTarget().isEmpty()) && !continuar){
             retorno = false;
-            FacesUtil.addErrorMessage("Nenhum cliente selecionado!");
+            continuar = true;
+            FacesUtil.addErrorMessage("Nenhum cliente foi selecionado para ter acesso aos arquivos carregados. Caso deseje continuar basta clicar em 'Salvar' novamente!");
         }
         return retorno;
     }
@@ -168,6 +173,7 @@ public class ArquivoUploadController {
         exibirCategoria = true;
         exibirUploadFiles = false;
         exibirPermissao = false;
+        continuar = false;
     }
 
     public void carregarArquivo(FileUploadEvent event) {
@@ -177,12 +183,19 @@ public class ArquivoUploadController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        exibirUploadFiles = false;
-        exibirCategoria = false;
-        exibirPermissao = true;
     }
 
-    private void addArquivo(UploadedFile file){
+    public void gerenciarPermissoes(){
+        if(arquivos != null && !arquivos.isEmpty()){
+            exibirUploadFiles = false;
+            exibirCategoria = false;
+            exibirPermissao = true;
+        } else {
+            FacesUtil.addErrorMessage("Deve ser carregado pelo menos 1 arquivo.");
+        }
+    }
+
+    private synchronized void addArquivo(UploadedFile file){
         if(arquivos == null){
             arquivos = new ArrayList<>();
         }

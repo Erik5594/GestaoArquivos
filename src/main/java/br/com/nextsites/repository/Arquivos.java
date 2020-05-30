@@ -51,11 +51,27 @@ public class Arquivos  implements Serializable {
     @Transactional
     public Arquivo salvar(Arquivo arquivo){
         try{
-            return this.manager.merge(arquivo);
+            Arquivo arquivoBanco = buscarNomeAndCategoria(arquivo.getNome(), arquivo.getDiretorio());
+            if(arquivoBanco == null){
+                arquivoBanco = this.manager.merge(arquivo);
+            }
+            return arquivoBanco;
         }catch (Exception e){
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Transactional
+    public Arquivo buscarNomeAndCategoria(String nomeArquivo, String categoria){
+        try{
+            return this.manager.createQuery("from Arquivo where upper(nome) = :nome and upper(diretorio) = :categoria", Arquivo.class)
+                    .setParameter("nome", nomeArquivo.toUpperCase())
+                    .setParameter("categoria", categoria)
+                    .getSingleResult();
+        }catch (NoResultException e){
+            return null;
+        }
     }
 
     @Transactional
