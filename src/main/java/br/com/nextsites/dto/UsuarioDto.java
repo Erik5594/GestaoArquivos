@@ -20,10 +20,12 @@ public @Data class UsuarioDto {
     }
 
     public UsuarioDto(Usuario usuario) {
-        this.id = usuario.getId();
-        this.nome = usuario.getNome();
-        this.email = usuario.getEmail();
-        this.senha = usuario.getSenha();
-        this.nivel = new GrupoDto(usuario.getNivel());
+        if(usuario != null){
+            this.id = usuario.getId();
+            this.nome = usuario.getNome();
+            this.email = usuario.getEmail();
+            this.senha = usuario.getSenha();
+            this.nivel = new GrupoDto(usuario.getNivel());
+        }
     }
 }

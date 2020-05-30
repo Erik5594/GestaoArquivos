@@ -32,7 +32,11 @@
                 <p:password size="30" id="password" />
 
                 <h:panelGroup/>
-                <p:commandButton value="Login" action="#{loginBean.login}" ajax="false" />
+                <p:column>
+                    <p:commandButton value="Login" action="#{loginBean.login}" ajax="false" />
+                    <p:button value="Recuperar senha" style="margin-left: 20px; color: red"
+                              outcome="RecuperarSenha"/>
+                </p:column>
             </h:panelGrid>
         </h:form>
     </div>

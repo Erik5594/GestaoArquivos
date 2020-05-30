@@ -1,0 +1,62 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui">
+
+    <ui:define name="titulo">Recuperar Senha</ui:define>
+
+    <ui:define name="corpo">
+        <f:metadata>
+            <o:viewParam name="token" value="#{recuperarSenhaController.token}"/>
+            <f:event listener="#{recuperarSenhaController.inicializar}" type="preRenderView" />
+        </f:metadata>
+        <h:form id="frm">
+            <p:messages showDetail="false" closable="true"/>
+            <h1>Recuperar Senha</h1>
+            <p:toolbar style="margin-top: 20px">
+                <p:toolbarGroup>
+
+                    <p:commandButton value="Salvar" id="botaoSalvar"
+                                     action="#{recuperarSenhaController.salvar}"
+                                     rendered="#{!recuperarSenhaController.informarEmail}"
+                                     update="frm" process="@this panelSenha"/>
+
+                    <p:commandButton value="Enviar" id="enviar"
+                                     rendered="#{recuperarSenhaController.informarEmail}"
+                                     actionListener="#{recuperarSenhaController.enviarEmail}"
+                                     update="frm" process="@this painel"/>
+
+                </p:toolbarGroup>
+                <p:toolbarGroup align="right">
+                    <p:button value="Logar" outcome="Login"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <h:panelGrid columns="2" id="painel" style="width: 100%; margin: 20px"
+                         rendered="#{recuperarSenhaController.informarEmail}"
+                         columnClasses="rotulo, campo">
+
+                <p:outputLabel value="E-mail" for="email"/>
+                <p:inputText value="#{recuperarSenhaController.email}" id="email"/>
+
+            </h:panelGrid>
+
+            <h:panelGrid columns="2" id="panelSenha" style="margin: 20px"
+                         rendered="#{!recuperarSenhaController.informarEmail}">
+
+                <p:outputLabel value="Nova Senha" for="pwd1"/>
+                <p:password id="pwd1" value="#{recuperarSenhaController.usuario.senha}" match="pwd2"
+                            required="true" requiredMessage="O campo Senha é obrigatório."
+                            weakLabel="Fraca" goodLabel="Bom" strongLabel="Forte" validatorMessage="Senhas não conferem"
+                            feedback="true" promptLabel="Digite uma senha"/>
+
+
+                <p:outputLabel value="Confirme a senha" for="pwd2"/>
+                <p:password id="pwd2" value="#{recuperarSenhaController.usuario.senha}"/>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
