@@ -25,6 +25,8 @@ import java.util.List;
 @ViewScoped
 public class PesquisaUsuarioController {
 
+    private static final String DELETADO = "Cadastro deletado com sucesso!";
+
     @Inject
     private UsuarioService usuarioService;
 
@@ -58,7 +60,7 @@ public class PesquisaUsuarioController {
         if(usuarioDto != null && usuarioDto.getId() != null){
             usuarioService.remover(usuarioDto);
             init();
-            FacesUtil.addInfoMessage("Usuario removido com sucesso!");
+            FacesUtil.addInfoMessage(DELETADO);
         }else{
             FacesUtil.addErrorMessage("Deve ser selecionado um usuário!");
         }

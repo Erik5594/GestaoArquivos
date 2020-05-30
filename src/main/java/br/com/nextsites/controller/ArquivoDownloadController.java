@@ -4,6 +4,8 @@ import br.com.nextsites.dto.ArquivoDto;
 import br.com.nextsites.dto.CategoriaDto;
 import br.com.nextsites.dto.PermissaoDto;
 import br.com.nextsites.dto.UsuarioDto;
+import br.com.nextsites.security.Seguranca;
+import br.com.nextsites.security.UsuarioSistema;
 import br.com.nextsites.service.ArquivoService;
 import br.com.nextsites.service.UsuarioService;
 import br.com.nextsites.util.file.FileUtil;
@@ -41,21 +43,53 @@ public class ArquivoDownloadController {
     @Inject
     private ArquivoService arquivoService;
 
-    @Getter @Setter
-    List<ArquivoDto> arquivos;
+    @Inject
+    private Seguranca seguranca;
 
     @Getter @Setter
-    ArquivoDto arquivo;
+    private List<ArquivoDto> arquivos;
+
+    @Getter @Setter
+    private ArquivoDto arquivo;
+
+    @Getter @Setter
+    private DualListModel<UsuarioDto> usuariosPick;
 
     @PostConstruct
     public void init(){
         limpar();
-        arquivos = arquivoService.getTodosArquivos();
+        if(seguranca != null){
+            if(seguranca.isAdministrador()){
+                arquivos = arquivoService.getTodosArquivos(null);
+            }else{
+                arquivos = arquivoService.getTodosArquivos(seguranca.getIdUsuario());
+            }
+        }
     }
 
     private void limpar(){
         pesquisa = "";
         arquivo = new ArquivoDto();
         arquivos = new ArrayList<>();
+        usuariosPick = new DualListModel<>();
+    }
+
+    public void atualizarPermissoes(){
+        List<UsuarioDto> usuarioComPermissao = usuariosPick.getTarget();
+        List<PermissaoDto> adcionarPermissoes = new ArrayList<>();
+
+        for(UsuarioDto usuario : usuarioComPermissao){
+            adcionarPermissoes.add(new PermissaoDto(usuario.getId(), arquivo.getId()));
+        }
+
+        arquivoService.incluirPermissoes(adcionarPermissoes);
+        FacesUtil.addInfoMessage(String.format("Permissões para o arquivo %s, categoria %s foram atualizadas com sucesso!",arquivo.getNome().toUpperCase(), arquivo.getDiretorio().toUpperCase()));
+        init();
+    }
+
+    public void buscarUsuarios(Long idArquivo){
+        List<UsuarioDto> usuariosComPermissao = arquivoService.getUsuariosDoArquivo(idArquivo);
+        List<UsuarioDto> usuariosSemPermissao = arquivoService.getUsuariosSemPermissao(idArquivo);
+        usuariosPick = new DualListModel<>(usuariosSemPermissao,usuariosComPermissao);
     }
 }

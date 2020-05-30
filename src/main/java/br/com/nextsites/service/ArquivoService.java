@@ -4,6 +4,7 @@ import br.com.nextsites.dto.ArquivoDto;
 import br.com.nextsites.dto.PermissaoDto;
 import br.com.nextsites.dto.UsuarioDto;
 import br.com.nextsites.model.Arquivo;
+import br.com.nextsites.model.Usuario;
 import br.com.nextsites.repository.Arquivos;
 import br.com.nextsites.repository.Usuarios;
 import br.com.nextsites.util.file.FileUtil;
@@ -54,23 +55,33 @@ public class ArquivoService {
     }
 
     public void incluirPermissoes(List<PermissaoDto> permissoes){
+        Long idArquivo = 0l;
         for(PermissaoDto permissao : permissoes){
+
+            if(!permissao.getIdArquivo().equals(idArquivo)){
+                removerPermissoes(permissao.getIdArquivo());
+                idArquivo = permissao.getIdArquivo();
+            }
+
             arquivoDao.incluirPermissao(permissao.getIdArquivo(), permissao.getIdUsuario());
         }
     }
 
-    public void removerPermissoes(List<PermissaoDto> permissoes){
-        for(PermissaoDto permissao : permissoes){
-            arquivoDao.removerPermissao(permissao.getIdArquivo(), permissao.getIdUsuario());
-        }
+    private void removerPermissoes(Long idArquivo){
+        arquivoDao.removerTodasPermissao(idArquivo);
     }
 
     public ArquivoDto salvarDocumento(ArquivoDto arquivoDto){
         return new ArquivoDto(arquivoDao.salvar(new Arquivo(arquivoDto)));
     }
 
-    public List<ArquivoDto> getTodosArquivos(){
-        List<Arquivo> arquivos = arquivoDao.getArquivos();
+    public List<ArquivoDto> getTodosArquivos(Long idUsuario){
+        List<Arquivo> arquivos;
+        if(idUsuario != null && idUsuario > 0l){
+            arquivos = arquivoDao.getArquivos(idUsuario);
+        }else{
+            arquivos = arquivoDao.getArquivos();
+        }
         List<ArquivoDto> arquivosDto = null;
         if(arquivos != null){
             arquivosDto = new ArrayList<>();
@@ -79,5 +90,26 @@ public class ArquivoService {
             }
         }
         return arquivosDto;
+    }
+
+    public List<UsuarioDto> getUsuariosDoArquivo(Long idArquivo){
+        List<Usuario> usuarios = arquivoDao.getUsuariosComAcesso(idArquivo);
+        return converterListUsuario(usuarios);
+    }
+
+    public List<UsuarioDto> getUsuariosSemPermissao(Long idArquivo){
+        List<Usuario> usuarios = arquivoDao.getUsuariosSemPermissao(idArquivo);
+        return converterListUsuario(usuarios);
+    }
+
+    private List<UsuarioDto> converterListUsuario(List<Usuario> usuarios){
+        List<UsuarioDto> usuariosDto = null;
+        if(usuarios != null){
+            usuariosDto = new ArrayList<>();
+            for(Usuario usuario : usuarios){
+                usuariosDto.add(new UsuarioDto(usuario));
+            }
+        }
+        return usuariosDto;
     }
 }

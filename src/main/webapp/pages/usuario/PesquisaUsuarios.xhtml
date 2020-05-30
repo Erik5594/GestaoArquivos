@@ -64,7 +64,7 @@
                 <p:button value="Não" onclick="PF('confirmacaoExclusao').hide(); return false;" />
                 <p:commandButton value="Sim" oncomplete="PF('confirmacaoExclusao').hide();"
                                  action="#{pesquisaUsuarioController.remover}" process="@this"
-                                 update=":frmPesquisa:grupoTable" id="yesButton" />
+                                 update="frmPesquisa" id="yesButton" />
             </p:confirmDialog>
         </h:form>
     </ui:define>

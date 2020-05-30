@@ -31,8 +31,8 @@
 
             </h:panelGrid>
 
-            <p:dataTable id="grupoTable" value="#{arquivoDownloadController.arquivos}" var="arquivo"
-                         style="margin-top: 20px; margin-left: 3px" emptyMessage="Nenhum usuario encontrado." rows="20"
+            <p:dataTable id="arquivosTable" value="#{arquivoDownloadController.arquivos}" var="arquivo"
+                         style="margin-top: 20px; margin-left: 3px" emptyMessage="Nenhum arquivo encontrado." rows="20"
                          paginator="true" paginatorAlwaysVisible="false" paginatorPosition="bottom">
                 <p:column headerText="Nome">
                     <h:outputText value="#{arquivo.nome}" />
@@ -44,12 +44,17 @@
                     <p:button outcome="/pages/usuario/CadastroUsuario" icon="pi pi-download" title="Baixar/Download">
                         <f:param name="usuario" value="#{arquivo.id}" />
                     </p:button>
-                    <p:button outcome="/pages/usuario/CadastroUsuario" icon="pi pi-lock" title="Permissões" rendered="#{seguranca.administrador}">
-                        <f:param name="usuario" value="#{arquivo.id}" />
-                    </p:button>
+
+                    <p:commandButton icon="pi pi-lock" onsuccess="PF('permissoes').show();" process="@this arquivosTable"
+                                     rendered="#{seguranca.administrador}" update="frmPesquisa"
+                                     actionListener="#{arquivoDownloadController.buscarUsuarios(arquivo.id)}">
+                        <f:setPropertyActionListener target="#{arquivoDownloadController.arquivo}"
+                                                     value="#{arquivo}" />
+                    </p:commandButton>
+
                     <p:commandButton icon="ui-icon-trash" title="Excluir" oncomplete="PF('confirmacaoExclusao').show()"
                                      rendered="#{seguranca.administrador}"
-                                     process="@this" update=":frmPesquisa:confirmacaoExclusaoDialog">
+                                     process="@this arquivosTable" update="frmPesquisa">
                         <f:setPropertyActionListener target="#{arquivoDownloadController.arquivo}"
                                                      value="#{arquivo}" />
                     </p:commandButton>
@@ -62,8 +67,26 @@
                 <p:button value="Não" onclick="PF('confirmacaoExclusao').hide(); return false;" />
                 <p:commandButton value="Sim" oncomplete="PF('confirmacaoExclusao').hide();"
                                  action="#{pesquisaUsuarioController.remover}" process="@this"
-                                 update=":frmPesquisa:grupoTable" id="yesButton" />
+                                 update=":frmPesquisa:arquivosTable" id="yesButton" />
             </p:confirmDialog>
+
+            <p:dialog header="Gerenciar Permissões" widgetVar="permissoes" modal="true" height="400" dynamic="true"
+                      resizable="false" draggable="false" id="gerenciarPermissoes" responsive="true" width="800">
+                Arquivo: <strong>#{arquivoDownloadController.arquivo.nome}</strong>
+                <p:pickList id="pickList" value="#{arquivoDownloadController.usuariosPick}" showCheckbox="true" responsive="true"
+                            var="usuario" itemLabel="#{usuario.nome}" itemValue="#{usuario}" filterMatchMode="contains"
+                            style="margin-bottom: 15px; margin-top: 15px"
+                            converter="usuario" showSourceFilter="true" showTargetFilter="true" >
+                    <f:facet name="sourceCaption">Sem permissão</f:facet>
+                    <f:facet name="targetCaption">Com permissão</f:facet>
+                </p:pickList>
+                <center>
+                    <p:commandButton value="Atualizar permissões" process="@this gerenciarPermissoes"
+                                     oncomplete="PF('permissoes').hide()" update="frmPesquisa"
+                                     actionListener="#{arquivoDownloadController.atualizarPermissoes}"/>
+                </center>
+            </p:dialog>
+
         </h:form>
     </ui:define>
 </ui:composition>

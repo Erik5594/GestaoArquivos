@@ -26,6 +26,7 @@ public class UsuarioController {
 
     private static final String TITULO = "Cadastro de Usuário: %s";
     private static final String SUCESSO = String.format(TITULO, "Cadastro realizado com sucesso!");
+    private static final String ATUALIZADO = String.format(TITULO, "Cadastro atualizado com sucesso!");
 
     @Getter @Setter
     private UsuarioDto usuario;
@@ -54,8 +55,12 @@ public class UsuarioController {
         List<String> validacoes = usuarioService.getValidar(usuario, TITULO);
         if (validacoes == null || validacoes.isEmpty()) {
             usuarioService.salvar(usuario);
+            if(isEditando()){
+                FacesUtil.addInfoMessage(ATUALIZADO);
+            }else{
+                FacesUtil.addInfoMessage(SUCESSO);
+            }
             limpar();
-            FacesUtil.addInfoMessage(SUCESSO);
         } else {
             imprimirValidacoes(validacoes);
         }

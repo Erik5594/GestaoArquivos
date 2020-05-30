@@ -132,20 +132,13 @@ public class ArquivoUploadController {
             List<UsuarioDto> usuarioComPermissao = usuarios.getTarget();
             List<PermissaoDto> adcionarPermissoes = new ArrayList<>();
 
-            List<UsuarioDto> usuarioSemPermissao = usuarios.getSource();
-            List<PermissaoDto> removerPermissoes = new ArrayList<>();
-
             for(ArquivoDto arquivoDto : arquivos){
                 for(UsuarioDto usuario : usuarioComPermissao){
                     adcionarPermissoes.add(new PermissaoDto(usuario.getId(), arquivoDto.getId()));
                 }
-                for(UsuarioDto usuario : usuarioSemPermissao){
-                    removerPermissoes.add(new PermissaoDto(usuario.getId(), arquivoDto.getId()));
-                }
             }
 
             arquivoService.incluirPermissoes(adcionarPermissoes);
-            arquivoService.removerPermissoes(removerPermissoes);
 
             limpar();
 

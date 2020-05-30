@@ -59,7 +59,8 @@
 
             <h:panelGrid columns="2" rendered="#{usuarioController.editando}" id="panelSenha">
                 <p:outputLabel value="" rendered="#{seguranca.administrador}"/>
-                <p:commandButton value="Resetar Senha" rendered="#{seguranca.administrador}"
+                <p:commandButton value="Resetar Senha" rendered="#{seguranca.administrador}" title="Será alterada para 1234"
+                                 update="frm"
                                  actionListener="#{usuarioController.resetarSenha}" process="@this panelSenha"/>
             </h:panelGrid>
         </h:form>
