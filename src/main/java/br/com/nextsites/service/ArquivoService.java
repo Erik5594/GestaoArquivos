@@ -112,4 +112,10 @@ public class ArquivoService {
         }
         return usuariosDto;
     }
+
+    public void deletarArquivo(ArquivoDto arquivoDto){
+        String arquivo = arquivoDto.getDiretorio()+arquivoDto.getNome()+".txt";
+        fileUtil.deletarArquivo(arquivo);
+        arquivoDao.remover(new Arquivo(arquivoDto));
+    }
 }

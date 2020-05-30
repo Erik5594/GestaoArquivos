@@ -3,12 +3,14 @@ package br.com.nextsites.repository;
 import br.com.nextsites.model.Arquivo;
 import br.com.nextsites.model.StatusUsuario;
 import br.com.nextsites.model.Usuario;
+import br.com.nextsites.service.NegocioException;
 import br.com.nextsites.util.jpa.Transactional;
 
 import javax.faces.context.ExceptionHandler;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,5 +123,23 @@ public class Arquivos  implements Serializable {
                 .setParameter("situacao", 0)
                 .setParameter("nivel", 2)
                 .getResultList();
+    }
+
+    @Transactional
+    public void remover(Arquivo arquivo) throws NegocioException {
+        try {
+            removerTodasPermissao(arquivo.getId());
+
+            arquivo = porId(arquivo.getId());
+            manager.remove(arquivo);
+            manager.flush();
+        } catch (PersistenceException e) {
+            throw new NegocioException("Arquivo não pode ser excluído.");
+        }
+    }
+
+    @Transactional
+    public Arquivo porId(Long id) {
+        return this.manager.find(Arquivo.class, id);
     }
 }

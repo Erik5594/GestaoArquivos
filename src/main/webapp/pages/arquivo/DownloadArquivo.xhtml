@@ -41,9 +41,9 @@
                     <h:outputText value="#{arquivo.diretorio}" />
                 </p:column>
                 <p:column style="width: 100px;" headerText="Ações">
-                    <p:button outcome="/pages/usuario/CadastroUsuario" icon="pi pi-download" title="Baixar/Download">
-                        <f:param name="usuario" value="#{arquivo.id}" />
-                    </p:button>
+                    <p:commandButton ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="pi pi-download" title="Baixar/Download">
+                        <p:fileDownload value="#{arquivo.file}" />
+                    </p:commandButton>
 
                     <p:commandButton icon="pi pi-lock" onsuccess="PF('permissoes').show();" process="@this arquivosTable"
                                      rendered="#{seguranca.administrador}" update="frmPesquisa"
@@ -61,13 +61,13 @@
                 </p:column>
             </p:dataTable>
 
-            <p:confirmDialog header="Exclusão de usuario"
-                             message="Tem certeza que deseja excluir o usuário #{pesquisaUsuarioController.usuarioDto.nome} ?"
+            <p:confirmDialog header="Exclusão de arquivo"
+                             message="Tem certeza que deseja excluir o arquivo #{arquivoDownloadController.arquivo.nome.toUpperCase()}, categoria #{arquivoDownloadController.arquivo.diretorio.toUpperCase()} ?"
                              widgetVar="confirmacaoExclusao"	id="confirmacaoExclusaoDialog">
                 <p:button value="Não" onclick="PF('confirmacaoExclusao').hide(); return false;" />
                 <p:commandButton value="Sim" oncomplete="PF('confirmacaoExclusao').hide();"
-                                 action="#{pesquisaUsuarioController.remover}" process="@this"
-                                 update=":frmPesquisa:arquivosTable" id="yesButton" />
+                                 action="#{arquivoDownloadController.deletarArquivo}" process="@this"
+                                 update="frmPesquisa" id="yesButton" />
             </p:confirmDialog>
 
             <p:dialog header="Gerenciar Permissões" widgetVar="permissoes" modal="true" height="400" dynamic="true"
@@ -85,6 +85,10 @@
                                      oncomplete="PF('permissoes').hide()" update="frmPesquisa"
                                      actionListener="#{arquivoDownloadController.atualizarPermissoes}"/>
                 </center>
+            </p:dialog>
+
+            <p:dialog modal="true" widgetVar="statusDialog" header="Status" draggable="false" closable="false" resizable="false">
+                <h:graphicImage library="images" name="loading.gif"/>
             </p:dialog>
 
         </h:form>

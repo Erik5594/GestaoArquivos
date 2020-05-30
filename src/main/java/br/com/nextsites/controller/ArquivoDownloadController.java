@@ -37,6 +37,8 @@ import java.util.List;
 @ViewScoped
 public class ArquivoDownloadController {
 
+    private static final String DELETADO = "Arquivo deletado com sucesso!";
+
     @Getter @Setter
     private String pesquisa;
 
@@ -91,5 +93,15 @@ public class ArquivoDownloadController {
         List<UsuarioDto> usuariosComPermissao = arquivoService.getUsuariosDoArquivo(idArquivo);
         List<UsuarioDto> usuariosSemPermissao = arquivoService.getUsuariosSemPermissao(idArquivo);
         usuariosPick = new DualListModel<>(usuariosSemPermissao,usuariosComPermissao);
+    }
+
+    public void deletarArquivo(){
+        if(arquivo != null){
+            arquivoService.deletarArquivo(arquivo);
+            init();
+            FacesUtil.addInfoMessage(DELETADO);
+        }else{
+            FacesUtil.addErrorMessage("Deve ser selecionado um arquivo para exclusão");
+        }
     }
 }

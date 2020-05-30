@@ -3,7 +3,11 @@ package br.com.nextsites.dto;
 import br.com.nextsites.model.Arquivo;
 import br.com.nextsites.model.Usuario;
 import lombok.Data;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,5 +41,15 @@ public @Data class ArquivoDto {
                 listUsuarios.add(new UsuarioDto(usuario));
             }
         }
+    }
+
+    public StreamedContent getFile() {
+        StreamedContent file = DefaultStreamedContent.builder()
+                .name(this.nome)
+                .contentType("application/pdf")
+                .stream(() -> new ByteArrayInputStream(this.conteudo))
+                .build();
+
+        return file;
     }
 }
