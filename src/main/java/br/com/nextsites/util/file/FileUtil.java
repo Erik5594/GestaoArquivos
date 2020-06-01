@@ -1,5 +1,6 @@
 package br.com.nextsites.util.file;
 
+import br.com.nextsites.service.NegocioException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -8,6 +9,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Next Solucoes
@@ -108,5 +110,22 @@ public class FileUtil {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public Properties getArquivoConfiguracao() throws IOException {
+        Properties config = new Properties();
+        FileInputStream arquivo = new FileInputStream(new File(PRINCIPAL+"config.properties"));
+        config.load(arquivo);
+        return config;
+    }
+
+    public String getUrlDominio() {
+        Properties config;
+        try {
+            config = getArquivoConfiguracao();
+        } catch (IOException e) {
+            throw new NegocioException(e.getMessage());
+        }
+        return config.getProperty("dominio.url");
     }
 }
