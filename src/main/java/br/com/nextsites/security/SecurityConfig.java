@@ -39,23 +39,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 
                 .authorizeRequests()
-                .antMatchers("/Login.xhtml", "/Erro.xhtml", "/RecuperarSenha.xhtml", "/javax.faces.resource/**").permitAll()
-                .antMatchers("/index.xhtml", "/AcessoNegado.xhtml", "/pages/arquivo/DownloadArquivo.xhtml", "/pages/usuario/MinhaConta.xhtml").authenticated()
-                .antMatchers("/pages/arquivo/UploadArquivo.xhtml", "/pages/usuario/CadastroUsuario.xhtml", "/pages/usuario/PesquisaUsuarios.xhtml").hasRole("ADMINISTRADOR")
-                .and()
+                    .antMatchers("/Login.xhtml", "/Erro.xhtml", "/RecuperarSenha.xhtml", "/javax.faces.resource/**").permitAll()
+                    .antMatchers("/index.xhtml", "/AcessoNegado.xhtml", "/pages/arquivo/DownloadArquivo.xhtml", "/pages/usuario/MinhaConta.xhtml").authenticated()
+                    .antMatchers("/pages/arquivo/UploadArquivo.xhtml", "/pages/usuario/CadastroUsuario.xhtml", "/pages/usuario/PesquisaUsuarios.xhtml").hasRole("ADMINISTRADOR")
+                    .and()
 
                 .formLogin()
-                .loginPage("/Login.xhtml")
-                .failureUrl("/Login.xhtml?invalid=true")
-                .and()
+                    .loginPage("/Login.xhtml")
+                    .failureUrl("/Login.xhtml?invalid=true")
+                    .and()
 
                 .logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .and()
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .and()
 
                 .exceptionHandling()
-                .accessDeniedPage("/AcessoNegado.xhtml")
-                .authenticationEntryPoint(jsfLoginEntry)
-                .accessDeniedHandler(jsfDeniedEntry);
+                    .accessDeniedPage("/AcessoNegado.xhtml")
+                    .authenticationEntryPoint(jsfLoginEntry)
+                    .accessDeniedHandler(jsfDeniedEntry);
     }
 }
