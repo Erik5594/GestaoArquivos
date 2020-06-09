@@ -13,7 +13,7 @@
             <f:event listener="#{arquivoUploadController.inicializar}" type="preRenderView" />
         </f:metadata>
         <h:form id="frm">
-            <p:messages showDetail="false" closable="true"/>
+            <p:messages showDetail="false" closable="true" id="messages"/>
             <h1>Upload de Arquivos</h1>
             <p:toolbar style="margin-top: 20px; margin-bottom: 20px">
                 <p:toolbarGroup>
@@ -82,6 +82,30 @@
                     </p:column>
                 </p:dataTable>
             </p:panel>
+            <h:panelGrid columns="2" id="painelArvores">
+                <p:tree value="#{arquivoUploadController.root}" var="doc" style="margin: 20px" id="arvore"
+                        selectionMode="single" selection="#{arquivoUploadController.selectedNode}">
+                    <p:ajax event="expand" update=":frm:messages" listener="#{arquivoUploadController.onNodeExpand}" />
+                    <p:ajax event="collapse" update=":frm:messages" listener="#{arquivoUploadController.onNodeCollapse}" />
+                    <p:ajax event="select" update=":frm:messages :frm:painelArvores" listener="#{arquivoUploadController.onNodeSelect}" />
+                    <p:ajax event="unselect" update=":frm:messages" listener="#{arquivoUploadController.onNodeUnselect}" />
+
+                    <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">
+                        <h:outputText value="#{doc.nomeCategoria}"/>
+                    </p:treeNode>
+                    <p:treeNode type="document" icon="pi pi-file">
+                        <h:outputText value="#{doc.nomeCategoria}" />
+                    </p:treeNode>
+                    <p:treeNode type="picture" icon="pi pi-image">
+                        <h:outputText value="#{doc.nomeCategoria}" />
+                    </p:treeNode>
+                    <p:treeNode type="mp3" icon="pi pi-video">
+                        <h:outputText value="#{doc.nomeCategoria}" />
+                    </p:treeNode>
+                </p:tree>
+                #{arquivoUploadController.selectedNode.data.nomeCategoria}
+            </h:panelGrid>
+
         </h:form>
     </ui:define>
 </ui:composition>

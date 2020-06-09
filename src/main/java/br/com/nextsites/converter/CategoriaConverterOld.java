@@ -1,33 +1,29 @@
 package br.com.nextsites.converter;
 
-import br.com.nextsites.dto.CategoriaDto;
-import br.com.nextsites.service.CategoriaService;
+import br.com.nextsites.dto.CategoriaOldDto;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.inject.Inject;
 
 /**
  * Next Solucoes
  *
  * @author erik_
- * Data Criacao: 24/05/2020 - 21:54
+ * Data Criacao: 09/06/2020 - 00:32
  */
-@FacesConverter(forClass = CategoriaDto.class, value = "categoriaConv")
-public class CategoriaConverter implements Converter {
+@FacesConverter(forClass = CategoriaOldDto.class)
+public class CategoriaConverterOld implements Converter {
 
-    @Inject
-    private CategoriaService categoriaService;
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        CategoriaDto retorno = null;
+        CategoriaOldDto retorno = null;
 
         if (StringUtils.isNotEmpty(value)) {
-            retorno = categoriaService.findById(Long.parseLong(value));
+            retorno = new CategoriaOldDto();
         }
 
         return retorno;
@@ -35,8 +31,8 @@ public class CategoriaConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        if (value != null && ((CategoriaDto) value).getId() != null) {
-            return ((CategoriaDto) value).getId().toString();
+        if (value != null && ((CategoriaOldDto) value).getNomeCategoria() != null) {
+            return ((CategoriaOldDto) value).getNomeCategoria();
         }
         return "";
     }

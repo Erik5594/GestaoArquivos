@@ -1,0 +1,44 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui">
+
+    <ui:define name="titulo">Cadastro de Categoria</ui:define>
+
+    <ui:define name="corpo">
+        <f:metadata>
+            <f:event listener="#{cadastroCategoriaController.inicializar}" type="preRenderView" />
+        </f:metadata>
+        <h:form id="frm">
+            <p:messages showDetail="false" closable="true"/>
+            <h1>Cadastro de Categoria</h1>
+            <p:toolbar style="margin-top: 20px">
+                <p:toolbarGroup>
+                    <p:button value="Novo" outcome="CadastroCategoria"/>
+
+                    <p:commandButton value="Salvar" id="botaoSalvar" actionListener="#{cadastroCategoriaController.salvar}"
+                                     update="frm" process="@this painel"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <h:panelGrid columns="2" id="painel" style=" margin: 20px"
+                         columnClasses="">
+
+                <p:outputLabel value="Categoria" for="@next"/>
+                <p:inputText id="categoria" size="30" maxlength="80" value="#{cadastroCategoriaController.categoria.nomeCategoria}"
+                             required="true" requiredMessage="O campo Categoria é obrigatório."/>
+
+                <p:outputLabel value="Categoria Pai" for="@next"/>
+                <p:selectOneMenu id="nivel" value="#{cadastroCategoriaController.categoria.categoriaPai}"
+                                 converter="categoriaConv"
+                                 filter="true" filterMatchMode="startsWith">
+                    <f:selectItem itemLabel="Sem categoria pai" />
+                    <f:selectItems value="#{cadastroCategoriaController.categorias}" var="categoria" itemLabel="#{categoria.nomeCategoria}" itemValue="#{categoria}"/>
+                </p:selectOneMenu>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>

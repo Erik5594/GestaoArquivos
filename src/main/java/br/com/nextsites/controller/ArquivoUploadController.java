@@ -1,20 +1,20 @@
 package br.com.nextsites.controller;
 
-import br.com.nextsites.dto.ArquivoDto;
-import br.com.nextsites.dto.CategoriaDto;
-import br.com.nextsites.dto.PermissaoDto;
-import br.com.nextsites.dto.UsuarioDto;
+import br.com.nextsites.dto.*;
 import br.com.nextsites.service.ArquivoService;
+import br.com.nextsites.service.CategoriaService;
 import br.com.nextsites.service.UsuarioService;
 import br.com.nextsites.util.file.FileUtil;
 import br.com.nextsites.util.jsf.FacesUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
-import org.primefaces.event.FileUploadEvent;
+import org.primefaces.event.*;
+import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.DualListModel;
+import org.primefaces.model.TreeNode;
 import org.primefaces.model.file.UploadedFile;
-import org.primefaces.model.file.UploadedFiles;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -37,7 +37,7 @@ import java.util.List;
 public class ArquivoUploadController {
 
     @Getter @Setter
-    private List<CategoriaDto> categorias;
+    private List<CategoriaOldDto> categorias;
 
     @Getter @Setter
     private DualListModel<UsuarioDto> usuarios;
@@ -62,8 +62,23 @@ public class ArquivoUploadController {
     @Getter @Setter
     private List<ArquivoDto> arquivos;
 
+    @Getter @Setter
+    private TreeNode root;
+
+    @Getter @Setter
+    private TreeNode selectedNode;
+
+    @Inject
+    private CategoriaService categoriaService;
+
     @PostConstruct
     public void init(){
+        root = new DefaultTreeNode();
+        Long lon = 198l;
+        for(int i=0; i<2; i++){
+            lon = lon+2;
+            root = categoriaService.retornoArvoreCategoria(root, lon);
+        }
         inicializarPickList();
     }
 
@@ -96,7 +111,7 @@ public class ArquivoUploadController {
     }
 
     private void adcionarNovaCategoria() {
-        CategoriaDto novaCategoria = new CategoriaDto();
+        CategoriaOldDto novaCategoria = new CategoriaOldDto();
         novaCategoria.setEditavel(true);
         categorias.add(novaCategoria);
     }
@@ -104,7 +119,7 @@ public class ArquivoUploadController {
     public void removerCategoria(){
         if(categorias.size() > 1){
             categorias.remove(categorias.size()-1);
-            CategoriaDto categoria = categorias.get(categorias.size()-1);
+            CategoriaOldDto categoria = categorias.get(categorias.size()-1);
             categoria.setEditavel(true);
             categoria.setNomeCategoria("");
         }
@@ -123,7 +138,7 @@ public class ArquivoUploadController {
 
     private String getCaminhoAtual(){
         String caminho = "";
-        for(CategoriaDto categoria : categorias){
+        for(CategoriaOldDto categoria : categorias){
             if(StringUtils.isNotBlank(categoria.getNomeCategoria())){
                 caminho = caminho + categoria.getNomeCategoria().toUpperCase()+FileUtil.SEPARADOR;
             }
@@ -206,5 +221,23 @@ public class ArquivoUploadController {
         arquivoDto.setDataEnvio(new Date());
         arquivoDto = arquivoService.salvarDocumento(arquivoDto);
         arquivos.add(arquivoDto);
+    }
+
+
+
+    public void onNodeExpand(NodeExpandEvent event) {
+        FacesUtil.addInfoMessage("Expanded "+ event.getTreeNode().toString());
+    }
+
+    public void onNodeCollapse(NodeCollapseEvent event) {
+        FacesUtil.addInfoMessage("Collapsed "+ event.getTreeNode().toString());
+    }
+
+    public void onNodeSelect(NodeSelectEvent event) {
+        FacesUtil.addInfoMessage("Selected "+ event.getTreeNode().toString());
+    }
+
+    public void onNodeUnselect(NodeUnselectEvent event) {
+        FacesUtil.addInfoMessage("Unselected "+ event.getTreeNode().toString());
     }
 }

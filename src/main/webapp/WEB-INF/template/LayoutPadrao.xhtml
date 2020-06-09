@@ -37,10 +37,10 @@
 
             <h:form style="display: inline-block">
                 <p:menubar styleClass="menu-sistema" autoDisplay="false">
-                    <p:menuitem value="Home" outcome="/index" style="margin-left: 7px"/>
                     <p:submenu label="Cadastros" rendered="#{seguranca.administrador}" style="margin-left: 7px">
                         <p:menuitem value="Usuários" outcome="/pages/usuario/CadastroUsuario"/>
                         <p:separator/>
+                        <p:menuitem value="Cetegorias" outcome="/pages/categoria/CadastroCategoria"/>
                         <p:menuitem value="Arquivos" outcome="/pages/arquivo/UploadArquivo"/>
                     </p:submenu>
                     <p:submenu label="Pesquisa" rendered="#{seguranca.administrador}" style="margin-left: 7px">
