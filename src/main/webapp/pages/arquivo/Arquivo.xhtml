@@ -1,0 +1,201 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui">
+
+    <ui:define name="titulo">Upload de Arquivos</ui:define>
+
+    <ui:define name="corpo">
+        <f:metadata>
+            <f:event listener="#{arquivoUploadController.inicializar}" type="preRenderView" />
+        </f:metadata>
+        <h:form id="frm">
+            <p:messages showDetail="false" closable="true" id="messages"/>
+            <h1>Upload de Arquivos</h1>
+            <p:toolbar style="margin-top: 20px; margin-bottom: 20px" id="menuBarra" >
+                <p:toolbarGroup>
+
+                    <p:commandButton value="Adcionar Arquivos" onsuccess="PF('uploadArquivo').show();"
+                                     actionListener="#{arquivoUploadController.limpar}"
+                                     rendered="#{seguranca.administrador}" style="margin-right: 7px"/>
+
+                </p:toolbarGroup>
+                <p:toolbarGroup>
+                    <p:commandButton value="Pesquisar" update="@form" actionListener="#{arquivoUploadController.pesquisar()}"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <p:panel rendered="#{arquivoUploadController.exibirPainelDocumento}" id="panelPrincipalTela">
+                <h:panelGrid columns="2" id="painelPesquisa" style="width: 100%; margin-top: 20px; margin-left: 15px"
+                             columnClasses="rotulo, campo">
+
+                    <p:outputLabel value="Pesquisar por:" for="nome"/>
+                    <p:inputText id="nome" size="60" value="#{arquivoUploadController.pesquisa}"
+                                 onkeyup="this.value = this.value.toUpperCase()"
+                                 placeholder="Nome do Arquivo, parte do conteudo do arquivo..."/>
+
+                </h:panelGrid>
+
+                <h:panelGrid columns="2" style="margin: 20px">
+                    <p:tree value="#{arquivoUploadController.root}" var="doc" id="arvore"
+                            selectionMode="single" selection="#{arquivoUploadController.selectedNode}">
+                        <p:ajax event="select" update="frm"
+                                listener="#{arquivoUploadController.onNodeSelect}" />
+
+                        <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">
+                            <h:outputText value="#{doc.nomeCategoria}"/>
+                        </p:treeNode>
+                    </p:tree>
+                    <p:dataGrid var="arquivo" value="#{arquivoUploadController.arquivos}" columns="5" layout="grid"
+                                rows="10" paginator="true" id="arquivos" emptyMessage="Não foi encontrado nenhum arquivo nesta pasta!"
+                                paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                rowsPerPageTemplate="5,10,15,20,25,30">
+
+                        <f:facet name="header">
+                            Arquivos
+                        </f:facet>
+
+                        <p:panel header="#{arquivo.nomeAbreviado}" style="text-align:center">
+                            <h:panelGrid columns="1" style="width:100%">
+                                <h:graphicImage library="images" name="pdf.png" width="30px"/>
+
+                                <p:commandButton value="Download" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="pi pi-arrow-down">
+                                    <p:fileDownload value="#{arquivo.file}" />
+                                </p:commandButton>
+
+                                <p:column rendered="#{seguranca.administrador}">
+                                    <p:commandButton icon="pi pi-lock" oncomplete="PF('gerenciarPermissoes').show();" process="@this arquivos"
+                                                     actionListener="#{arquivoUploadController.buscarUsuarios(arquivo.id)}"
+                                                     title="Gerenciar Permissões" update=":frm:gerenciarPermissoes"
+                                                     style="margin-right: 7px">
+                                        <f:setPropertyActionListener target="#{arquivoUploadController.arquivoSelecionado}"
+                                                                     value="#{arquivo}" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="pi pi-pencil" title="Editar Nome" oncomplete="PF('nomeArquivo').show()"
+                                                     process="@this arquivos" update=":frm:nomeArquivo"
+                                                     style="margin-right: 7px">
+                                        <f:setPropertyActionListener target="#{arquivoUploadController.arquivoSelecionado}"
+                                                                     value="#{arquivo}" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-trash" title="Excluir" oncomplete="PF('confirmacaoExclusao').show()"
+                                                     process="@this arquivos" update=":frm:confirmacaoExclusaoDialog">
+                                        <f:setPropertyActionListener target="#{arquivoUploadController.arquivoSelecionado}"
+                                                                     value="#{arquivo}" />
+                                    </p:commandButton>
+                                </p:column>
+                            </h:panelGrid>
+                        </p:panel>
+
+                    </p:dataGrid>
+                </h:panelGrid>
+            </p:panel>
+            <p:panel rendered="#{!arquivoUploadController.exibirPainelDocumento}">
+                <h1>Nenhum arquivo encontrado!</h1>
+            </p:panel>
+
+
+            <p:dialog header="Carregar Arquivo" widgetVar="uploadArquivo" modal="true" height="400" dynamic="true"
+                      resizable="false" draggable="false" id="uploadArquivo" responsive="true" width="800">
+                <p:messages showDetail="false" closable="true" id="messageUpload"/>
+                <p:panel id="panelDialogPrincipal">
+                    <p:panel id="upload" style="margin-bottom: 20px" rendered="#{arquivoUploadController.exibirUploadFiles}">
+                        <h:panelGrid columns="2" style="margin-bottom: 20px">
+                            <p:outputLabel value="Categoria: " for="@next"/>
+                            <p:selectOneMenu id="nivel" value="#{arquivoUploadController.categoriaSelecionadaCarregarArquivos}"
+                                             converter="categoriaConv"
+                                             filter="true" filterMatchMode="startsWith">
+                                <p:ajax process="@this nivel" update="upload"/>
+                                <f:selectItem itemLabel="Nenhuma categoria selecionada" />
+                                <f:selectItems value="#{arquivoUploadController.categorias}" var="categoria"
+                                               itemLabel="#{categoria.nomeCategoria}" itemValue="#{categoria}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+
+                        <p:fileUpload listener="#{arquivoUploadController.carregarArquivo}" disabled="#{!arquivoUploadController.categoriaSelecionada()}"
+                                      dragDropSupport="false" label="Selecione até 100 arquivos" cancelLabel="Cancelar" update="upload"
+                                      fileLimitMessage="Número maximo de arquivos excedido, será carregado apenas 100!" multiple="true"
+                                      uploadIcon="pi pi-save" uploadLabel="Salvar arquivos"
+                                      sizeLimit="10000000" fileLimit="100" allowTypes="/(\.|\/)(pdf)$/"/>
+                        <ul>
+                            <li><font style="color: red">A opção <strong>Gerenciar Permissões</strong> só deve ser clicada quando for finalizado o carregamento de todos arquivos.</font></li>
+                        </ul>
+                        <center>
+                            <p:commandButton value="Gerenciar Permissões do(s) #{arquivoUploadController.novosArquivos.size()} arquivo(s)"
+                                             process="@this upload"  update="messageUpload panelDialogPrincipal" style="margin: 15px"
+                                             actionListener="#{arquivoUploadController.gerenciarPermissoes()}"/>
+                        </center>
+                    </p:panel>
+
+                    <p:panel id="permissao" header="Selecione o(s) cliente(s) que poderão acessar o(s) arquivo(s) recém carregado(s)"
+                             style="margin-bottom: 20px" rendered="#{arquivoUploadController.exibirPermissao}">
+
+                        <p:selectCheckboxMenu id="selecao" value="#{arquivoUploadController.usuariosComPermissao}"
+                                              label="Clientes" converter="usuario" multiple="true"
+                                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                            <f:selectItems value="#{arquivoUploadController.usuarios}" var="usuaio" itemLabel="#{usuaio.nome}"/>
+                        </p:selectCheckboxMenu>
+
+                        <center>
+                            <p:commandButton value="Salvar" process="@this permissao" icon="pi pi-save"
+                                             update="frm messageUpload panelDialogPrincipal" style="margin: 15px"
+                                             actionListener="#{arquivoUploadController.salvar}"/>
+                        </center>
+
+                    </p:panel>
+                </p:panel>
+            </p:dialog>
+
+
+            <p:dialog header="Gerenciar Permissões" widgetVar="gerenciarPermissoes" modal="true" height="200" dynamic="true"
+                      resizable="false" draggable="false" id="gerenciarPermissoes" responsive="true" width="800">
+                <p:messages showDetail="false" closable="true" id="messagePermissoes"/>
+                <p:panel id="permissaoDial" style="margin-bottom: 20px"
+                         header="Selecione o(s) cliente(s) que poderão acessar o(s) arquivo(s) recém carregado(s)">
+
+                    <p:selectCheckboxMenu id="selecaoPerm" value="#{arquivoUploadController.usuariosComPermissao}"
+                                          label="Clientes" converter="usuario" multiple="true"
+                                          filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                        <f:selectItems value="#{arquivoUploadController.usuarios}" var="usuaio" itemLabel="#{usuaio.nome}"/>
+                    </p:selectCheckboxMenu>
+
+                    <center>
+                        <p:commandButton value="Salvar" process="@this permissaoDial" icon="pi pi-save"
+                                         update="messageUpload gerenciarPermissoes :frm:arquivos" style="margin: 15px"
+                                         actionListener="#{arquivoUploadController.salvarPermissao}"/>
+                    </center>
+
+                </p:panel>
+            </p:dialog>
+
+
+            <p:dialog header="Editar nome arquivo" widgetVar="nomeArquivo" modal="true" height="120" dynamic="true"
+                      resizable="false" draggable="false" id="nomeArquivo" responsive="true" width="770">
+                <p:messages showDetail="false" closable="true" id="messagesNomeArquivo"/>
+                <h:panelGrid columns="3">
+                    <p:outputLabel for="@next" value="Nome:"/>
+                    <p:inputText value="#{arquivoUploadController.arquivoSelecionado.nome}" size="80"/>
+                    <p:commandButton icon="pi pi-check" update=":frm:messagesNomeArquivo :frm:arquivos"
+                                     actionListener="#{arquivoUploadController.editarArquivo}"/>
+                </h:panelGrid>
+            </p:dialog>
+
+
+            <p:confirmDialog header="Exclusão de arquivo"
+                             message="Tem certeza que deseja excluir o arquivo?"
+                             widgetVar="confirmacaoExclusao" id="confirmacaoExclusaoDialog">
+                <br/>
+                <h:outputLabel value="#{arquivoUploadController.arquivoSelecionado.nome}" style="margin: 10px"/>
+                <br/><br/>
+                <p:button value="Não" onclick="PF('confirmacaoExclusao').hide(); return false;" />
+                <p:commandButton value="Sim" oncomplete="PF('confirmacaoExclusao').hide();"
+                                 action="#{arquivoUploadController.deletarArquivo}" process="@this"
+                                 update="frm" id="yesButton" />
+            </p:confirmDialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

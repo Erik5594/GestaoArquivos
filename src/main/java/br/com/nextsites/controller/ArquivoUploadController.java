@@ -1,6 +1,7 @@
 package br.com.nextsites.controller;
 
 import br.com.nextsites.dto.*;
+import br.com.nextsites.security.Seguranca;
 import br.com.nextsites.service.ArquivoService;
 import br.com.nextsites.service.CategoriaService;
 import br.com.nextsites.service.UsuarioService;
@@ -36,14 +37,16 @@ import java.util.List;
 @ViewScoped
 public class ArquivoUploadController {
 
-    @Getter @Setter
-    private List<CategoriaOldDto> categorias;
+    private static final String DELETADO = "Arquivo deletado com sucesso!";
 
     @Getter @Setter
-    private DualListModel<UsuarioDto> usuarios;
+    private List<CategoriaDto> categorias;
 
     @Getter @Setter
-    private String caminhoConcluido;
+    private List<UsuarioDto> usuarios;
+
+    @Getter @Setter
+    private List<UsuarioDto> usuariosComPermissao;
 
     @Inject
     private UsuarioService usuarioService;
@@ -51,16 +54,29 @@ public class ArquivoUploadController {
     @Inject
     private ArquivoService arquivoService;
 
-    @Getter @Setter
-    private boolean exibirCategoria = true;
+    @Inject
+    private Seguranca seguranca;
+
     @Getter @Setter
     private boolean exibirUploadFiles = false;
+
     @Getter @Setter
     private boolean exibirPermissao = false;
+
     @Getter @Setter
     private boolean continuar = false;
+
+    @Getter @Setter
+    private String pesquisa;
+
     @Getter @Setter
     private List<ArquivoDto> arquivos;
+
+    @Getter @Setter
+    private ArquivoDto arquivoSelecionado;
+
+    @Getter @Setter
+    private List<ArquivoDto> novosArquivos = new ArrayList<>();
 
     @Getter @Setter
     private TreeNode root;
@@ -71,88 +87,89 @@ public class ArquivoUploadController {
     @Inject
     private CategoriaService categoriaService;
 
-    @PostConstruct
-    public void init(){
+    @Getter @Setter
+    private CategoriaDto categoriaSelecionadaExibirArquivos;
+
+    @Getter @Setter
+    private CategoriaDto categoriaSelecionadaCarregarArquivos;
+
+    private void carregarArvoreCategoria(){
         root = new DefaultTreeNode();
-        Long lon = 198l;
-        for(int i=0; i<2; i++){
-            lon = lon+2;
-            root = categoriaService.retornoArvoreCategoria(root, lon);
+
+        List<CategoriaDto> categorias = buscarCategoriasUsuario();
+
+        for(CategoriaDto categoriaDto : categorias){
+            root = categoriaService.retornoArvoreCategoria(root, categoriaDto.getId());
         }
-        inicializarPickList();
     }
 
-    private void inicializarPickList(){
-        List<UsuarioDto> listUsuariosSource = usuarioService.getListaClientes();
-        List<UsuarioDto> listUsuariosTarget = new ArrayList<>();
-        usuarios = new DualListModel<>(listUsuariosSource, listUsuariosTarget);
+    private List<CategoriaDto> buscarCategoriasUsuario(){
+        List<CategoriaDto> categorias = new ArrayList<>();
+        if(seguranca.isAdministrador()){
+            categorias = categoriaService.buscarTodas();
+        }else{
+            List<ArquivoDto> arquivos = arquivoService.getTodosArquivos(seguranca.getIdUsuario());
+            if(arquivos != null){
+                for(ArquivoDto arq : arquivos){
+                    categorias.add(arq.getCategoriaDto());
+                }
+            }
+        }
+        if(categorias == null){
+            categorias = new ArrayList<>();
+        }
+        return categorias;
+    }
+
+    private void inicializarListaClientes(){
+        usuarios = usuarioService.getListaClientes();
+    }
+
+    private void inicializarListaCategorias(){
+        categorias = categoriaService.buscarTodas();
     }
 
     public void inicializar() {
         if (FacesUtil.isNotPostback()) {
             categorias = new ArrayList<>();
-            adcionarCategoria();
+            usuarios = new ArrayList<>();
+
+            carregarArvoreCategoria();
+            inicializarListaClientes();
+            inicializarListaCategorias();
+            buscarArquivos();
         }
     }
 
-    public List<String> completeNome(String start) {
-        return arquivoService.nomePastas(getCaminhoAtual(), start.toUpperCase());
-    }
-
-    public void adcionarCategoria(){
-        if(categorias.size() > 0){
-            if(StringUtils.isNotBlank(categorias.get(categorias.size()-1).getNomeCategoria())){
-                categorias.get(categorias.size()-1).setEditavel(false);
-                adcionarNovaCategoria();
+    public void salvarPermissao(){
+        if(arquivoSelecionado != null){
+            List<PermissaoDto> adcionarPermissoes = new ArrayList<>();
+            for(UsuarioDto usuario : usuariosComPermissao){
+                adcionarPermissoes.add(new PermissaoDto(usuario.getId(), arquivoSelecionado.getId()));
             }
-        }else {
-            adcionarNovaCategoria();
+            arquivoService.incluirPermissoes(adcionarPermissoes);
+            FacesUtil.addInfoMessage("Permissões salvas com sucesso!");
         }
+
     }
 
-    private void adcionarNovaCategoria() {
-        CategoriaOldDto novaCategoria = new CategoriaOldDto();
-        novaCategoria.setEditavel(true);
-        categorias.add(novaCategoria);
+    public void buscarUsuarios(Long idArquivo){
+        usuariosComPermissao = arquivoService.getUsuariosDoArquivo(idArquivo);
     }
 
-    public void removerCategoria(){
-        if(categorias.size() > 1){
-            categorias.remove(categorias.size()-1);
-            CategoriaOldDto categoria = categorias.get(categorias.size()-1);
-            categoria.setEditavel(true);
-            categoria.setNomeCategoria("");
+    public void editarArquivo(){
+        if(arquivoSelecionado != null){
+            arquivoService.editarDocumento(arquivoSelecionado);
+            FacesUtil.addInfoMessage("Nome editado com sucesso!");
         }
-    }
-
-    public void concluirCaminho(){
-        caminhoConcluido = getCaminhoAtual();
-        if(StringUtils.isNotBlank(caminhoConcluido) && !FileUtil.SEPARADOR.equals(caminhoConcluido)) {
-            arquivoService.nomePastas(caminhoConcluido, null);
-            exibirCategoria = false;
-            exibirUploadFiles = true;
-            exibirPermissao = false;
-            FacesUtil.addWarnMessage("A opção 'Gerenciar Permissões' só deve ser clicada quando for finalizado o carregamento de todos arquivos.");
-        }
-    }
-
-    private String getCaminhoAtual(){
-        String caminho = "";
-        for(CategoriaOldDto categoria : categorias){
-            if(StringUtils.isNotBlank(categoria.getNomeCategoria())){
-                caminho = caminho + categoria.getNomeCategoria().toUpperCase()+FileUtil.SEPARADOR;
-            }
-        }
-        return caminho;
     }
 
     public void salvar(){
         if(validar()){
-            List<UsuarioDto> usuarioComPermissao = usuarios.getTarget();
             List<PermissaoDto> adcionarPermissoes = new ArrayList<>();
 
-            for(ArquivoDto arquivoDto : arquivos){
-                for(UsuarioDto usuario : usuarioComPermissao){
+            for(ArquivoDto arquivoDto : novosArquivos){
+                for(UsuarioDto usuario : usuariosComPermissao){
                     adcionarPermissoes.add(new PermissaoDto(usuario.getId(), arquivoDto.getId()));
                 }
             }
@@ -160,6 +177,8 @@ public class ArquivoUploadController {
             arquivoService.incluirPermissoes(adcionarPermissoes);
 
             limpar();
+            buscarArquivos();
+            exibirUploadFiles = false;
 
             FacesUtil.addInfoMessage("Documento salvo com sucesso!");
         }
@@ -167,77 +186,123 @@ public class ArquivoUploadController {
 
     private boolean validar(){
         boolean retorno = true;
-        if(arquivos == null || arquivos.isEmpty()){
+        if(novosArquivos == null || novosArquivos.isEmpty()){
             retorno = false;
             FacesUtil.addErrorMessage("Nenhum arquivo carregado!");
         }
-        if((usuarios.getTarget() == null || usuarios.getTarget().isEmpty()) && !continuar){
+        if((usuariosComPermissao == null || usuariosComPermissao.isEmpty()) && !continuar){
             retorno = false;
             continuar = true;
-            FacesUtil.addErrorMessage("Nenhum cliente foi selecionado para ter acesso aos arquivos carregados. Caso deseje continuar basta clicar em 'Salvar' novamente!");
+            FacesUtil.addErrorMessage("Nenhum usuário foi selecionado para ter acesso aos arquivos carregados. Caso deseje continuar basta clicar em 'Salvar' novamente!");
         }
         return retorno;
     }
 
-    private void limpar(){
-        categorias = new ArrayList<>();
-        adcionarCategoria();
-        inicializarPickList();
-        caminhoConcluido = "";
-        arquivos = new ArrayList<>();
-        exibirCategoria = true;
-        exibirUploadFiles = false;
+    public void limpar(){
+        categoriaSelecionadaCarregarArquivos = null;
+        novosArquivos = new ArrayList<>();
+        usuariosComPermissao = new ArrayList<>();
+
+        exibirUploadFiles = true;
         exibirPermissao = false;
         continuar = false;
     }
 
     public void carregarArquivo(FileUploadEvent event) {
         try {
-            arquivoService.gravarArquivo(caminhoConcluido, event.getFile());
-            addArquivo(event.getFile());
+            if(categoriaSelecionadaCarregarArquivos != null){
+                Long idArquivo = addArquivo(event.getFile());
+                arquivoService.gravarArquivoEmDisco(idArquivo, event.getFile());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void gerenciarPermissoes(){
-        if(arquivos != null && !arquivos.isEmpty()){
+        if(novosArquivos != null && !novosArquivos.isEmpty()){
             exibirUploadFiles = false;
-            exibirCategoria = false;
             exibirPermissao = true;
         } else {
             FacesUtil.addErrorMessage("Deve ser carregado pelo menos 1 arquivo.");
         }
     }
 
-    private synchronized void addArquivo(UploadedFile file){
+    private synchronized Long addArquivo(UploadedFile file){
         if(arquivos == null){
             arquivos = new ArrayList<>();
         }
+
+        if(novosArquivos == null){
+            novosArquivos = new ArrayList<>();
+        }
         ArquivoDto arquivoDto = new ArquivoDto();
         arquivoDto.setNome(file.getFileName());
-        arquivoDto.setDiretorio(caminhoConcluido);
         arquivoDto.setConteudo(file.getContent());
         arquivoDto.setDataEnvio(new Date());
+        arquivoDto.setCategoriaDto(categoriaSelecionadaCarregarArquivos);
         arquivoDto = arquivoService.salvarDocumento(arquivoDto);
+
         arquivos.add(arquivoDto);
-    }
+        novosArquivos.add(arquivoDto);
 
-
-
-    public void onNodeExpand(NodeExpandEvent event) {
-        FacesUtil.addInfoMessage("Expanded "+ event.getTreeNode().toString());
-    }
-
-    public void onNodeCollapse(NodeCollapseEvent event) {
-        FacesUtil.addInfoMessage("Collapsed "+ event.getTreeNode().toString());
+        return arquivoDto.getId();
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
-        FacesUtil.addInfoMessage("Selected "+ event.getTreeNode().toString());
+        categoriaSelecionadaExibirArquivos = (CategoriaDto) event.getTreeNode().getData();
+        event.getTreeNode().setExpanded(true);
+        buscarArquivos();
     }
 
-    public void onNodeUnselect(NodeUnselectEvent event) {
-        FacesUtil.addInfoMessage("Unselected "+ event.getTreeNode().toString());
+    public boolean categoriaSelecionada(){
+        return categoriaSelecionadaCarregarArquivos != null;
+    }
+
+
+    private void buscarArquivos(){
+        Long idCategoria = categoriaSelecionadaExibirArquivos == null ? null:categoriaSelecionadaExibirArquivos.getId();
+
+        if(seguranca.isAdministrador()){
+            arquivos = arquivoService.getTodosArquivos(null, idCategoria);
+        }else{
+            arquivos = arquivoService.getTodosArquivos(seguranca.getIdUsuario(), idCategoria);
+        }
+    }
+
+    public void deletarArquivo(){
+        if(arquivoSelecionado != null){
+            arquivoService.deletarArquivo(arquivoSelecionado);
+            buscarArquivos();
+            FacesUtil.addInfoMessage(DELETADO);
+        }else{
+            FacesUtil.addErrorMessage("Deve ser selecionado um arquivo para exclusão");
+        }
+    }
+
+    public void pesquisar(){
+        categoriaSelecionadaExibirArquivos = null;
+        if(StringUtils.isNotBlank(pesquisa) && pesquisa.length() > 2) {
+            Long idUsuario = null;
+            if (!seguranca.isAdministrador()) {
+                idUsuario = seguranca.getIdUsuario();
+            }
+            arquivos = arquivoService.pesquisarGeral(pesquisa, idUsuario);
+            if(arquivos == null || arquivos.isEmpty()){
+               FacesUtil.addWarnMessage("Nenhum arquivo encontrado com os parâmetros da pesquisa!");
+            }
+        }else{
+            buscarArquivos();
+            FacesUtil.addErrorMessage("É obrigatório digitar pelo menos 3 caracteres para realizar a pesquisa!");
+        }
+    }
+
+    public boolean isExibirPainelDocumento(){
+        Long idUsuario = seguranca.getIdUsuario();
+        if(seguranca.isAdministrador()){
+            idUsuario = null;
+        }
+        List<ArquivoDto> arquivoDtos = arquivoService.getTodosArquivos(idUsuario);
+        return arquivoDtos != null && !arquivoDtos.isEmpty();
     }
 }

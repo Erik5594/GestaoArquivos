@@ -3,6 +3,7 @@ package br.com.nextsites.dto;
 import br.com.nextsites.model.Arquivo;
 import br.com.nextsites.model.Usuario;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -25,6 +26,7 @@ public @Data class ArquivoDto {
     private byte[] conteudo;
     private Date dataEnvio;
     private List<UsuarioDto> listUsuarios;
+    private CategoriaDto categoriaDto;
 
     public ArquivoDto() {
     }
@@ -32,7 +34,6 @@ public @Data class ArquivoDto {
     public ArquivoDto(Arquivo arquivo) {
         this.id = arquivo.getId();
         this.nome = arquivo.getNome();
-        this.diretorio = arquivo.getDiretorio();
         this.conteudo = arquivo.getConteudo();
         this.dataEnvio = arquivo.getDataEnvio();
         if(arquivo.getUsuarios() != null){
@@ -41,6 +42,20 @@ public @Data class ArquivoDto {
                 listUsuarios.add(new UsuarioDto(usuario));
             }
         }
+        this.categoriaDto = new CategoriaDto(arquivo.getCategoria());
+    }
+
+    public String getNome(){
+        if(StringUtils.isNotBlank(this.nome)){
+            if(this.nome.length() > 4){
+                if(!".pdf".equalsIgnoreCase(this.nome.substring(this.nome.length() -4, this.nome.length()))){
+                    return this.nome + ".pdf";
+                }
+            }else{
+                return this.nome + ".pdf";
+            }
+        }
+        return this.nome;
     }
 
     public StreamedContent getFile() {
@@ -51,6 +66,13 @@ public @Data class ArquivoDto {
                 .build();
 
         return file;
+    }
+
+    public String getNomeAbreviado(){
+        if(StringUtils.isNotBlank(this.nome) && this.nome.length() > 10){
+            return this.nome.substring(0,9)+"...";
+        }
+        return this.nome;
     }
 
     @Override

@@ -9,4 +9,5 @@ package br.com.nextsites.util;
 public class Consts {
     public static final String CAMPO_OBRIGATORIO = "%s é um campo obrigatório.";
     public static final String CAMPO_INVALIDO = "Campo %s é inválido.";
+    public static final String EMAIL_JA_CADASTRADO = "Já existe o E-mail: %s cadastrado.";
 }

@@ -46,17 +46,21 @@ public class ArquivoService {
         return pastas;
     }
 
-    public void gravarArquivo(String diretorio, UploadedFile file) throws IOException {
-        if(StringUtils.isBlank(diretorio)){
-            diretorio = "";
+    public void gravarArquivoEmDisco(Long idArquivo, UploadedFile file) throws IOException {
+        if(idArquivo == null){
+            throw new NegocioException("Id do Arquivo está null");
         }
-        if(arquivoDao.buscarNomeAndCategoria(file.getFileName(), diretorio) == null) {
-            String arquivo = diretorio + file.getFileName();
-            fileUtil.gravarArquivo(arquivo, file.getContent());
-            String conteudo = fileUtil.getConteudo(arquivo);
-            fileUtil.gravarArquivoTxt(arquivo + ".txt", conteudo);
-            fileUtil.deletarArquivo(arquivo);
+
+        if(arquivoDao.porId(idArquivo) == null){
+            throw new NegocioException("Arquivo não foi gravado no banco de dados.");
         }
+
+        fileUtil.gravarArquivo(idArquivo.toString()+".pdf", file.getContent());
+        String conteudo = fileUtil.getConteudo(idArquivo.toString()+".pdf");
+
+        fileUtil.gravarArquivoTxt(idArquivo.toString() + ".txt", conteudo);
+
+        fileUtil.deletarArquivo(idArquivo.toString()+".pdf");
     }
 
     public void incluirPermissoes(List<PermissaoDto> permissoes){
@@ -80,11 +84,27 @@ public class ArquivoService {
         return new ArquivoDto(arquivoDao.salvar(new Arquivo(arquivoDto)));
     }
 
+    public ArquivoDto editarDocumento(ArquivoDto arquivoDto){
+        return new ArquivoDto(arquivoDao.editar(new Arquivo(arquivoDto)));
+    }
+
     public List<ArquivoDto> getTodosArquivos(Long idUsuario){
+        return getTodosArquivos(idUsuario, null);
+    }
+
+    public List<ArquivoDto> getTodosArquivos(Long idUsuario, Long idCategoria){
         if(idUsuario != null && idUsuario > 0l){
-            return converterListArquivo(arquivoDao.getArquivos(idUsuario));
+            if(idCategoria != null && idCategoria > 0l){
+                return converterListArquivo(arquivoDao.getArquivosCategoria(idUsuario, idCategoria));
+            }else{
+                return converterListArquivo(arquivoDao.getArquivos(idUsuario));
+            }
         }else{
-            return converterListArquivo(arquivoDao.getArquivos());
+            if(idCategoria != null && idCategoria > 0l){
+                return converterListArquivo(arquivoDao.getArquivosCategoria(idCategoria));
+            }else{
+                return converterListArquivo(arquivoDao.getArquivos());
+            }
         }
     }
 
@@ -101,7 +121,7 @@ public class ArquivoService {
 
 
     public void deletarArquivo(ArquivoDto arquivoDto){
-        String arquivo = arquivoDto.getDiretorio()+arquivoDto.getNome()+".txt";
+        String arquivo = arquivoDto.getId()+".txt";
         fileUtil.deletarArquivo(arquivo);
         arquivoDao.remover(new Arquivo(arquivoDto));
     }
@@ -140,8 +160,8 @@ public class ArquivoService {
     public List<ArquivoDto> pesquisarConteudo(List<ArquivoDto> arquivosQueDevemSerPesquisados, String texto){
         List<ArquivoDto> contemConteudo = new ArrayList<>();
         for(ArquivoDto arquivoDto : arquivosQueDevemSerPesquisados){
-            String diretorio = arquivoDto.getDiretorio()+arquivoDto.getNome()+".txt";
-            if(fileUtil.contemTexto(diretorio, texto)){
+            String diretorio = arquivoDto.getId()+".txt";
+            if(fileUtil.contemTexto(diretorio, texto.toUpperCase())){
                 contemConteudo.add(arquivoDto);
             }
         }

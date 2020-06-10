@@ -34,6 +34,13 @@ public class Arquivos  implements Serializable {
     }
 
     @Transactional
+    public List<Arquivo> getArquivosCategoria(Long idCategoria){
+        return manager.createQuery("from Arquivo where categoria.id = :idCategoria", Arquivo.class)
+                .setParameter("idCategoria", idCategoria)
+                .getResultList();
+    }
+
+    @Transactional
     public List<Arquivo> getArquivos(Long idUsuario){
         try {
             return manager.createNativeQuery("select a.* " +
@@ -49,6 +56,23 @@ public class Arquivos  implements Serializable {
     }
 
     @Transactional
+    public List<Arquivo> getArquivosCategoria(Long idUsuario, Long idCategoria){
+        try {
+            return manager.createNativeQuery("select a.* " +
+                    " from arquivo a " +
+                    " inner join usuario_arquivo ua " +
+                    " on a.id = ua.arquivo_id " +
+                    " where ua.usuario_id = :idUsuario" +
+                    " and a.categoria_id = :idCategoria", Arquivo.class)
+                    .setParameter("idUsuario", idUsuario)
+                    .setParameter("idCategoria", idCategoria)
+                    .getResultList();
+        } catch (NoResultException e){
+            return null;
+        }
+    }
+
+    @Transactional
     public Arquivo salvar(Arquivo arquivo){
         try{
             Arquivo arquivoBanco = buscarNomeAndCategoria(arquivo.getNome(), arquivo.getDiretorio());
@@ -56,6 +80,16 @@ public class Arquivos  implements Serializable {
                 arquivoBanco = this.manager.merge(arquivo);
             }
             return arquivoBanco;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Transactional
+    public Arquivo editar(Arquivo arquivo){
+        try{
+            return this.manager.merge(arquivo);
         }catch (Exception e){
             e.printStackTrace();
         }

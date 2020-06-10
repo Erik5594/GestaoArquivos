@@ -21,7 +21,7 @@ import java.util.Properties;
 public class FileUtil {
 
     public static final String SEPARADOR = System.getProperty("file.separator");
-    private static final String PRINCIPAL = System.getProperty("user.home")+SEPARADOR+"SGA"+SEPARADOR;
+    private static final String PRINCIPAL = System.getProperty("user.home")+SEPARADOR+"SGA"+SEPARADOR+"ARQUIVOS"+SEPARADOR;
 
     public static List<File> listaPastasNoDiretorio(String diretorio, String startNome){
         File dir = new File(PRINCIPAL+diretorio);
@@ -39,7 +39,15 @@ public class FileUtil {
         return retorno;
     }
 
+    private void criarDiretorioArquivos(){
+        File dir = new File(PRINCIPAL);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+    }
+
     public void gravarArquivo(final String arquivo, final byte[] conteudo) throws IOException {
+        criarDiretorioArquivos();
         String caminho = PRINCIPAL+arquivo;
         File file = new File(caminho);
         OutputStream out = new FileOutputStream(file);
@@ -85,7 +93,7 @@ public class FileUtil {
             FileReader fileReader = new FileReader(PRINCIPAL+diretorio);
             BufferedReader lerArq = new BufferedReader(fileReader);
             String linha = lerArq.readLine();
-            if(linha.contains(texto)){
+            if(linha.toUpperCase().contains(texto)){
                 lerArq.close();
                 fileReader.close();
                 return true;
@@ -95,7 +103,7 @@ public class FileUtil {
             while (linha != null){
                 linha = lerArq.readLine();
                 if(StringUtils.isNotBlank(linha)){
-                    if(linha.contains(texto)){
+                    if(linha.toUpperCase().contains(texto)){
                         lerArq.close();
                         fileReader.close();
                         return true;
@@ -105,7 +113,7 @@ public class FileUtil {
             }
             lerArq.close();
             fileReader.close();
-            return conteudo.toString().contains(texto);
+            return conteudo.toString().toUpperCase().contains(texto);
         } catch (IOException e) {
             e.printStackTrace();
         }

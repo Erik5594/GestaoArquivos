@@ -41,13 +41,13 @@
                         <p:menuitem value="Usuários" outcome="/pages/usuario/CadastroUsuario"/>
                         <p:separator/>
                         <p:menuitem value="Cetegorias" outcome="/pages/categoria/CadastroCategoria"/>
-                        <p:menuitem value="Arquivos" outcome="/pages/arquivo/UploadArquivo"/>
+                        <p:separator/>
+                        <p:menuitem value="Arquivos" outcome="/pages/arquivo/Arquivo"/>
                     </p:submenu>
                     <p:submenu label="Pesquisa" rendered="#{seguranca.administrador}" style="margin-left: 7px">
                         <p:menuitem value="Usuários" outcome="/pages/usuario/PesquisaUsuarios"/>
-                        <p:menuitem value="Arquivos" outcome="/pages/arquivo/DownloadArquivo"/>
                     </p:submenu>
-                    <p:menuitem value="Arquivos" outcome="/pages/arquivo/DownloadArquivo" style="margin-left: 7px"/>
+                    <p:menuitem value="Arquivos" outcome="/pages/arquivo/Arquivo" style="margin-left: 7px"/>
                     <p:menuitem value="Minha Conta" outcome="/pages/usuario/MinhaConta" style="margin-left: 7px">
                         <f:param name="usuario" value="#{seguranca.idUsuario}" />
                     </p:menuitem>

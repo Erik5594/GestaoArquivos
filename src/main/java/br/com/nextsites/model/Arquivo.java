@@ -29,7 +29,7 @@ public @Data class Arquivo  implements Serializable {
     @Column(nullable = false, length = 100)
     private String nome;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = true, length = 200)
     private String diretorio;
 
     @Lob
@@ -43,12 +43,16 @@ public @Data class Arquivo  implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "usuario_id"))
     private List<Usuario> usuarios;
 
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
+
     public Arquivo(ArquivoDto arquivoDto) {
         this.id = arquivoDto.getId();
         this.nome = arquivoDto.getNome();
-        this.diretorio = arquivoDto.getDiretorio();
         this.conteudo = arquivoDto.getConteudo();
         this.dataEnvio = arquivoDto.getDataEnvio();
+        this.categoria = new Categoria(arquivoDto.getCategoriaDto());
     }
 
     public Arquivo() {

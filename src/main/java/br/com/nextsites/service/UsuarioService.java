@@ -41,6 +41,8 @@ public class UsuarioService {
                 retornoList.add(String.format(titulo, String.format(Consts.CAMPO_OBRIGATORIO, "E-mail")));
             }else if(!usuario.getEmail().contains("@")){
                 retornoList.add(String.format(titulo, String.format(Consts.CAMPO_INVALIDO, "E-mail")));
+            }else if(getUsuarioPorEmail(usuario.getEmail()) != null){
+                retornoList.add(String.format(titulo, String.format(Consts.EMAIL_JA_CADASTRADO, usuario.getEmail())));
             }
 
             if(StringUtils.isBlank(usuario.getNome())){
