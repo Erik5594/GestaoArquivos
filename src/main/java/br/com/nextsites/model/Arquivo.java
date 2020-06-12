@@ -1,12 +1,10 @@
 package br.com.nextsites.model;
 
 import br.com.nextsites.dto.ArquivoDto;
-import br.com.nextsites.dto.UsuarioDto;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,9 +26,6 @@ public @Data class Arquivo  implements Serializable {
 
     @Column(nullable = false, length = 100)
     private String nome;
-
-    @Column(nullable = true, length = 200)
-    private String diretorio;
 
     @Lob
     private byte[] conteudo;

@@ -32,9 +32,6 @@ public class CadastroCategoriaController {
     @Inject
     private CategoriaService categoriaService;
 
-    @Inject
-    private FacesUtil facesUtil;
-
     @Getter @Setter
     private boolean adcCategoriaPai;
 
@@ -67,13 +64,13 @@ public class CadastroCategoriaController {
         try {
             if(StringUtils.isNotBlank(categoria.getNomeCategoria())){
                 categoriaService.salvar(categoria);
-                facesUtil.addInfoMessage("Nova categoria criada com sucesso!");
+                FacesUtil.addInfoMessage("Nova categoria criada com sucesso!");
                 limpar();
             }else{
                 FacesUtil.addErrorMessage("Deve ser informado um nome para a nova categoria!");
             }
         }catch (Exception e){
-            facesUtil.addErrorMessage(e.getMessage());
+            FacesUtil.addErrorMessage(e.getMessage());
         }
     }
 

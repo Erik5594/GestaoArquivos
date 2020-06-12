@@ -98,13 +98,6 @@ public class ArquivoService {
         return usuarioService.converterListUsuario(usuarios);
     }
 
-    public List<UsuarioDto> getUsuariosSemPermissao(Long idArquivo){
-        List<Usuario> usuarios = arquivoDao.getUsuariosSemPermissao(idArquivo);
-        return usuarioService.converterListUsuario(usuarios);
-    }
-
-
-
     public void deletarArquivo(ArquivoDto arquivoDto){
         String arquivo = arquivoDto.getId()+".txt";
         fileUtil.deletarArquivo(arquivo);

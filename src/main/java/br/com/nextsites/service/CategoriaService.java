@@ -1,7 +1,6 @@
 package br.com.nextsites.service;
 
 import br.com.nextsites.dto.CategoriaDto;
-import br.com.nextsites.dto.Document;
 import br.com.nextsites.model.Categoria;
 import br.com.nextsites.repository.Categorias;
 import org.primefaces.model.DefaultTreeNode;

@@ -1,19 +1,15 @@
 package br.com.nextsites.repository;
 
 import br.com.nextsites.model.Arquivo;
-import br.com.nextsites.model.StatusUsuario;
 import br.com.nextsites.model.Usuario;
 import br.com.nextsites.service.NegocioException;
 import br.com.nextsites.util.jpa.Transactional;
 
-import javax.faces.context.ExceptionHandler;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
-import javax.persistence.Query;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -75,7 +71,7 @@ public class Arquivos  implements Serializable {
     @Transactional
     public Arquivo salvar(Arquivo arquivo){
         try{
-            Arquivo arquivoBanco = buscarNomeAndCategoria(arquivo.getNome(), arquivo.getDiretorio());
+            Arquivo arquivoBanco = buscarNomeAndCategoria(arquivo.getNome(), arquivo.getCategoria().getId());
             if(arquivoBanco == null){
                 arquivoBanco = this.manager.merge(arquivo);
             }
@@ -97,9 +93,9 @@ public class Arquivos  implements Serializable {
     }
 
     @Transactional
-    public Arquivo buscarNomeAndCategoria(String nomeArquivo, String categoria){
+    public Arquivo buscarNomeAndCategoria(String nomeArquivo, Long categoria){
         try{
-            return this.manager.createQuery("from Arquivo where upper(nome) = :nome and upper(diretorio) = :categoria", Arquivo.class)
+            return this.manager.createQuery("from Arquivo where upper(nome) = :nome and upper(categoria.id) = :categoria", Arquivo.class)
                     .setParameter("nome", nomeArquivo.toUpperCase())
                     .setParameter("categoria", categoria)
                     .getSingleResult();

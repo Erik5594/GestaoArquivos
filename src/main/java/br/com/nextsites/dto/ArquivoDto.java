@@ -22,7 +22,6 @@ import java.util.List;
 public @Data class ArquivoDto {
     private Long id;
     private String nome;
-    private String diretorio;
     private byte[] conteudo;
     private Date dataEnvio;
     private List<UsuarioDto> listUsuarios;

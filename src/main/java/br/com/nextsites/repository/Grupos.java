@@ -1,7 +1,6 @@
 package br.com.nextsites.repository;
 
 import br.com.nextsites.model.Grupo;
-import br.com.nextsites.model.Usuario;
 import br.com.nextsites.util.jpa.Transactional;
 
 import javax.inject.Inject;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import br.com.nextsites.model.Grupo;
 import br.com.nextsites.model.Usuario;
 import br.com.nextsites.repository.Usuarios;
 import br.com.nextsites.util.cdi.CDIServiceLocator;
