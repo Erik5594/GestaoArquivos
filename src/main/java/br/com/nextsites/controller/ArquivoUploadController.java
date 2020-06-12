@@ -16,6 +16,7 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.file.UploadedFile;
+import org.primefaces.model.file.UploadedFiles;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -58,13 +59,19 @@ public class ArquivoUploadController {
     private Seguranca seguranca;
 
     @Getter @Setter
-    private boolean exibirUploadFiles = false;
+    private boolean exibirUploadFiles;
 
     @Getter @Setter
-    private boolean exibirPermissao = false;
+    private boolean exibirPermissao;
 
     @Getter @Setter
-    private boolean continuar = false;
+    private boolean continuar;
+
+    @Getter @Setter
+    private boolean exibirPainelCategoria;
+
+    @Getter @Setter
+    private boolean exibirPainelAlterarNome;
 
     @Getter @Setter
     private String pesquisa;
@@ -84,6 +91,12 @@ public class ArquivoUploadController {
     @Getter @Setter
     private TreeNode selectedNode;
 
+    @Getter @Setter
+    private TreeNode opcoesCategoriaArquivo;
+
+    @Getter @Setter
+    private TreeNode selecionadoCategoriaArquivo;
+
     @Inject
     private CategoriaService categoriaService;
 
@@ -93,13 +106,25 @@ public class ArquivoUploadController {
     @Getter @Setter
     private CategoriaDto categoriaSelecionadaCarregarArquivos;
 
-    private void carregarArvoreCategoria(){
+    private String nomeDiretorio;
+
+    private void carregarArvoreCategoriaRoot(){
         root = new DefaultTreeNode();
 
         List<CategoriaDto> categorias = buscarCategoriasUsuario();
 
         for(CategoriaDto categoriaDto : categorias){
             root = categoriaService.retornoArvoreCategoria(root, categoriaDto.getId());
+        }
+    }
+
+    private void carregarArvoreCategoriaArquivo(){
+        opcoesCategoriaArquivo = new DefaultTreeNode();
+
+        List<CategoriaDto> categorias = buscarCategoriasUsuario();
+
+        for(CategoriaDto categoriaDto : categorias){
+            opcoesCategoriaArquivo = categoriaService.retornoArvoreCategoria(opcoesCategoriaArquivo, categoriaDto.getId());
         }
     }
 
@@ -134,7 +159,7 @@ public class ArquivoUploadController {
             categorias = new ArrayList<>();
             usuarios = new ArrayList<>();
 
-            carregarArvoreCategoria();
+            carregarArvoreCategoriaRoot();
             inicializarListaClientes();
             inicializarListaCategorias();
             buscarArquivos();
@@ -164,23 +189,52 @@ public class ArquivoUploadController {
         }
     }
 
+    public void editarNovosArquivos(){
+        exibirPainelPermissao();
+    }
+
     public void salvar(){
         if(validar()){
-            List<PermissaoDto> adcionarPermissoes = new ArrayList<>();
-
-            for(ArquivoDto arquivoDto : novosArquivos){
-                for(UsuarioDto usuario : usuariosComPermissao){
-                    adcionarPermissoes.add(new PermissaoDto(usuario.getId(), arquivoDto.getId()));
-                }
-            }
-
-            arquivoService.incluirPermissoes(adcionarPermissoes);
+            salvarArquivos();
+            incluirPermissoes();
 
             limpar();
             buscarArquivos();
-            exibirUploadFiles = false;
+            semExibicao();
 
-            FacesUtil.addInfoMessage("Documento salvo com sucesso!");
+            FacesUtil.addInfoMessage("Documento(s) salvo(s) com sucesso!");
+        }
+    }
+
+    private void incluirPermissoes(){
+        List<PermissaoDto> adcionarPermissoes = new ArrayList<>();
+
+        for(ArquivoDto arquivoDto : novosArquivos){
+            for(UsuarioDto usuario : usuariosComPermissao){
+                adcionarPermissoes.add(new PermissaoDto(usuario.getId(), arquivoDto.getId()));
+            }
+        }
+
+        arquivoService.incluirPermissoes(adcionarPermissoes);
+    }
+
+    private void salvarArquivos(){
+        if(novosArquivos != null && !novosArquivos.isEmpty()){
+            if(arquivos == null){
+                arquivos = new ArrayList<>();
+            }
+            List<ArquivoDto> arquivosSalvos = new ArrayList<>();
+            for(ArquivoDto arquivo : novosArquivos){
+                arquivo = arquivoService.salvarDocumento(arquivo);
+                arquivosSalvos.add(arquivo);
+                arquivos.add(arquivo);
+                try {
+                    arquivoService.gravarArquivoEmDisco(arquivo);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            novosArquivos = arquivosSalvos;
         }
     }
 
@@ -202,37 +256,19 @@ public class ArquivoUploadController {
         categoriaSelecionadaCarregarArquivos = null;
         novosArquivos = new ArrayList<>();
         usuariosComPermissao = new ArrayList<>();
-
-        exibirUploadFiles = true;
-        exibirPermissao = false;
+        selecionadoCategoriaArquivo = null;
+        carregarArvoreCategoriaArquivo();
+        exibirPainelCategoria();
         continuar = false;
     }
 
     public void carregarArquivo(FileUploadEvent event) {
-        try {
-            if(categoriaSelecionadaCarregarArquivos != null){
-                Long idArquivo = addArquivo(event.getFile());
-                arquivoService.gravarArquivoEmDisco(idArquivo, event.getFile());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(categoriaSelecionadaCarregarArquivos != null){
+            addArquivo(event.getFile());
         }
     }
 
-    public void gerenciarPermissoes(){
-        if(novosArquivos != null && !novosArquivos.isEmpty()){
-            exibirUploadFiles = false;
-            exibirPermissao = true;
-        } else {
-            FacesUtil.addErrorMessage("Deve ser carregado pelo menos 1 arquivo.");
-        }
-    }
-
-    private synchronized Long addArquivo(UploadedFile file){
-        if(arquivos == null){
-            arquivos = new ArrayList<>();
-        }
-
+    private synchronized void addArquivo(UploadedFile file){
         if(novosArquivos == null){
             novosArquivos = new ArrayList<>();
         }
@@ -241,18 +277,36 @@ public class ArquivoUploadController {
         arquivoDto.setConteudo(file.getContent());
         arquivoDto.setDataEnvio(new Date());
         arquivoDto.setCategoriaDto(categoriaSelecionadaCarregarArquivos);
-        arquivoDto = arquivoService.salvarDocumento(arquivoDto);
 
-        arquivos.add(arquivoDto);
         novosArquivos.add(arquivoDto);
+    }
 
-        return arquivoDto.getId();
+    public void selecionarCategoria(NodeSelectEvent event) {
+        categoriaSelecionadaCarregarArquivos = (CategoriaDto) event.getTreeNode().getData();
+        abrirTreeNode(event.getTreeNode());
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
         categoriaSelecionadaExibirArquivos = (CategoriaDto) event.getTreeNode().getData();
-        event.getTreeNode().setExpanded(true);
+        this.nomeDiretorio = extrairCaminho(event.getTreeNode(), null);
         buscarArquivos();
+    }
+
+    private String extrairCaminho(TreeNode treeNode, String caminho){
+        String separador = "/";
+        if(caminho == null){
+            caminho = "";
+        }
+        if(treeNode != null) {
+            treeNode.setExpanded(true);
+            if (treeNode.getData() != null) {
+                caminho = separador + ((CategoriaDto) treeNode.getData()).getNomeCategoria() + caminho;
+                if (treeNode.getParent() != null) {
+                    caminho = extrairCaminho(treeNode.getParent(), caminho);
+                }
+            }
+        }
+        return caminho;
     }
 
     public boolean categoriaSelecionada(){
@@ -303,6 +357,75 @@ public class ArquivoUploadController {
             idUsuario = null;
         }
         List<ArquivoDto> arquivoDtos = arquivoService.getTodosArquivos(idUsuario);
-        return arquivoDtos != null && !arquivoDtos.isEmpty();
+
+        return arquivoDtos != null && !arquivoDtos.isEmpty() || (idUsuario == null && categorias != null && !categorias.isEmpty());
     }
+
+    public String getNomeDiretorio(){
+        if(StringUtils.isBlank(this.nomeDiretorio) || "/".equals(this.nomeDiretorio)){
+            return "Arquivos";
+        }
+        return this.nomeDiretorio;
+    }
+
+    public void selecionarCategoriaArquivo(){
+        if(categoriaSelecionadaCarregarArquivos != null){
+            exibirPainelUpload();
+        }else{
+            FacesUtil.addErrorMessage("Deve ser selecionado uma categoria!");
+        }
+    }
+
+    public void conferir(){
+        if(novosArquivos != null && !novosArquivos.isEmpty()){
+            exibirPainelNome();
+        } else {
+            FacesUtil.addErrorMessage("Deve ser carregado pelo menos 1 arquivo.");
+        }
+    }
+
+    private void abrirTreeNode(TreeNode treeNode){
+        if(treeNode != null){
+            treeNode.setExpanded(true);
+            if(treeNode.getParent() != null){
+                abrirTreeNode(treeNode.getParent());
+            }
+        }
+    }
+
+    private void exibirPainelCategoria(){
+        exibirPainelCategoria = true;
+        exibirUploadFiles = false;
+        exibirPainelAlterarNome = false;
+        exibirPermissao = false;
+    }
+
+    private void exibirPainelUpload(){
+        exibirPainelCategoria = false;
+        exibirUploadFiles = true;
+        exibirPainelAlterarNome = false;
+        exibirPermissao = false;
+    }
+
+    private void exibirPainelNome(){
+        exibirPainelCategoria = false;
+        exibirUploadFiles = false;
+        exibirPainelAlterarNome = true;
+        exibirPermissao = false;
+    }
+
+    private void exibirPainelPermissao(){
+        exibirPainelCategoria = false;
+        exibirUploadFiles = false;
+        exibirPainelAlterarNome = false;
+        exibirPermissao = true;
+    }
+
+    private void semExibicao(){
+        exibirPainelCategoria = false;
+        exibirUploadFiles = false;
+        exibirPainelAlterarNome = false;
+        exibirPermissao = false;
+    }
+
 }

@@ -27,17 +27,27 @@
             <h:panelGrid columns="2" id="painel" style=" margin: 20px"
                          columnClasses="">
 
-                <p:outputLabel value="Categoria" for="@next"/>
-                <p:inputText id="categoria" size="30" maxlength="80" value="#{cadastroCategoriaController.categoria.nomeCategoria}"
-                             required="true" requiredMessage="O campo Categoria é obrigatório."/>
+                <p:outputLabel value="Nova Categoria:" for="@next"/>
+                <p:inputText id="categoria" size="30" maxlength="80" value="#{cadastroCategoriaController.categoria.nomeCategoria}"/>
 
-                <p:outputLabel value="Categoria Pai" for="@next"/>
-                <p:selectOneMenu id="nivel" value="#{cadastroCategoriaController.categoria.categoriaPai}"
-                                 converter="categoriaConv"
-                                 filter="true" filterMatchMode="startsWith">
-                    <f:selectItem itemLabel="Sem categoria pai" />
-                    <f:selectItems value="#{cadastroCategoriaController.categorias}" var="categoria" itemLabel="#{categoria.nomeCategoria}" itemValue="#{categoria}"/>
-                </p:selectOneMenu>
+                <p:accordionPanel/>
+
+                <p:selectBooleanCheckbox value="#{cadastroCategoriaController.adcCategoriaPai}" itemLabel="Selecionar categoria pai">
+                    <p:ajax update=":frm:painel" process="painel"/>
+                </p:selectBooleanCheckbox>
+
+                <p:accordionPanel/>
+
+                <p:tree value="#{cadastroCategoriaController.categoriaPai}" var="doc" id="arvore"
+                        selection="#{cadastroCategoriaController.selectedNode}"
+                        selectionMode="single" rendered="#{cadastroCategoriaController.adcCategoriaPai}">
+                    <p:ajax event="select" update="frm" process="@this :frm:painel"
+                            listener="#{cadastroCategoriaController.onNodeSelect}" />
+
+                    <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">
+                        <h:outputText value="#{doc.nomeCategoria}"/>
+                    </p:treeNode>
+                </p:tree>
             </h:panelGrid>
         </h:form>
     </ui:define>

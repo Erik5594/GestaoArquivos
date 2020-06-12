@@ -60,7 +60,10 @@ public class CategoriaService {
     private TreeNode criarCategoriaPai(Long idNovaCategoriaPaiDto, TreeNode categoriaFilha, TreeNode root){
         CategoriaDto novaCategoriaPaiDto = new CategoriaDto(categoriaDao.findById(idNovaCategoriaPaiDto));
 
-        TreeNode categoriaPai = getTree(novaCategoriaPaiDto, root.getChildren());
+        TreeNode categoriaPai = getTreeExistente(novaCategoriaPaiDto, root.getChildren());
+        if(categoriaPai == null){
+            categoriaPai = new DefaultTreeNode(novaCategoriaPaiDto, null);
+        }
 
         if(categoriaFilha != null){
             categoriaPai.getChildren().add(categoriaFilha);
@@ -72,21 +75,13 @@ public class CategoriaService {
         }
     }
 
-    private TreeNode getTree(CategoriaDto novaCategoriaPaiDto, List<TreeNode> categorias){
-        TreeNode treeNodeRetorno = getTreeExistente(novaCategoriaPaiDto, categorias);
-        if(treeNodeRetorno == null){
-            treeNodeRetorno = new DefaultTreeNode(novaCategoriaPaiDto, null);
-        }
-        return treeNodeRetorno;
-    }
-
     private TreeNode getTreeExistente(CategoriaDto novaCategoriaPaiDto, List<TreeNode> categorias){
         if(categorias != null && !categorias.isEmpty()){
             for(TreeNode pasta : categorias){
                 if(pasta.getData() != null && pasta.getData().equals(novaCategoriaPaiDto)){
                     return pasta;
                 }else if (pasta.getChildren() != null && !pasta.getChildren().isEmpty()){
-                    TreeNode treeNode = getTree(novaCategoriaPaiDto, pasta.getChildren());
+                    TreeNode treeNode = getTreeExistente(novaCategoriaPaiDto, pasta.getChildren());
                     if(treeNode != null){
                         return treeNode;
                     }

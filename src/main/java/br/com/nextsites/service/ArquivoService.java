@@ -6,17 +6,11 @@ import br.com.nextsites.dto.UsuarioDto;
 import br.com.nextsites.model.Arquivo;
 import br.com.nextsites.model.Usuario;
 import br.com.nextsites.repository.Arquivos;
-import br.com.nextsites.repository.Usuarios;
 import br.com.nextsites.util.file.FileUtil;
-import br.com.nextsites.util.jpa.Transactional;
-import org.apache.commons.lang3.StringUtils;
-import org.primefaces.model.file.UploadedFile;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,31 +30,22 @@ public class ArquivoService {
     @Inject
     private UsuarioService usuarioService;
 
-    public List<String> nomePastas(String diretorio, String startNome){
-        List<String> pastas = new ArrayList<>();
-        String start = StringUtils.isBlank(startNome) ? "":startNome;
-        List<File> arquivos = FileUtil.listaPastasNoDiretorio(diretorio, start);
-        for(File file : arquivos){
-            pastas.add(file.getName());
-        }
-        return pastas;
-    }
 
-    public void gravarArquivoEmDisco(Long idArquivo, UploadedFile file) throws IOException {
-        if(idArquivo == null){
+    public void gravarArquivoEmDisco(ArquivoDto arquivo) throws IOException {
+        if(arquivo == null){
             throw new NegocioException("Id do Arquivo está null");
         }
 
-        if(arquivoDao.porId(idArquivo) == null){
+        if(arquivoDao.porId(arquivo.getId()) == null){
             throw new NegocioException("Arquivo não foi gravado no banco de dados.");
         }
 
-        fileUtil.gravarArquivo(idArquivo.toString()+".pdf", file.getContent());
-        String conteudo = fileUtil.getConteudo(idArquivo.toString()+".pdf");
+        fileUtil.gravarArquivo(arquivo.getId().toString()+".pdf", arquivo.getConteudo());
+        String conteudo = fileUtil.getConteudo(arquivo.getId()+".pdf");
 
-        fileUtil.gravarArquivoTxt(idArquivo.toString() + ".txt", conteudo);
+        fileUtil.gravarArquivoTxt(arquivo.getId() + ".txt", conteudo);
 
-        fileUtil.deletarArquivo(idArquivo.toString()+".pdf");
+        fileUtil.deletarArquivo(arquivo.getId()+".pdf");
     }
 
     public void incluirPermissoes(List<PermissaoDto> permissoes){
