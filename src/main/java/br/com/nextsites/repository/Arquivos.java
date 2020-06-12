@@ -95,7 +95,7 @@ public class Arquivos  implements Serializable {
     @Transactional
     public Arquivo buscarNomeAndCategoria(String nomeArquivo, Long categoria){
         try{
-            return this.manager.createQuery("from Arquivo where upper(nome) = :nome and upper(categoria.id) = :categoria", Arquivo.class)
+            return this.manager.createQuery("from Arquivo where upper(nome) = :nome and categoria.id = :categoria", Arquivo.class)
                     .setParameter("nome", nomeArquivo.toUpperCase())
                     .setParameter("categoria", categoria)
                     .getSingleResult();
