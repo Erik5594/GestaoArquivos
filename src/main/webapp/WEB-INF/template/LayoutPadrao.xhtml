@@ -16,27 +16,27 @@
 <h:body>
     <p:ajaxStatus styleClass="ajax-status">
         <f:facet name="start">
-            <h:graphicImage library="images" name="loading.gif"/>
+            <h:graphicImage library="images" name="loading.gif" width="30" style="margin-top: 5px"/>
         </f:facet>
         <f:facet name="complete">
             <h:outputText value=""/>
         </f:facet>
     </p:ajaxStatus>
 
-    <div style="padding: 5px 0px; margin-bottom: 20px; height: 30px; background-color: #545454; color: #fff; box-shadow: 0px 2px 2px #ccc;">
+    <div style="padding: 5px 0px; height: 45px; background-color: #FF8C00; color: #fff; box-shadow: 0px 2px 2px #ccc;">
         <div style="margin-left: 8px; float: left">
-            <!--<h:link outcome="/index">
-                <h:graphicImage library="images" name="logo.png" />
-            </h:link>-->
+            <h:link outcome="/pages/arquivo/Arquivo">
+                <h:graphicImage library="images" name="logo.png" width="80"/>
+            </h:link>
         </div>
 
         <div style="margin-left: 8px; float: right; margin-right: 110px">
-                <span style="float: left; height: 30px; line-height: 30px; margin-right: 60px">
+                <span style="float: left; height: 30px; line-height: 45px; margin-right: 60px">
                 Olá #{seguranca.nomeUsuario}!
                 </span>
 
-            <h:form style="display: inline-block">
-                <p:menubar styleClass="menu-sistema" autoDisplay="false">
+            <h:form style="display: inline-block;">
+                <p:menubar styleClass="menu-sistema" autoDisplay="false" style="line-height: 45px">
                     <p:submenu label="Cadastros" rendered="#{seguranca.administrador}" style="margin-left: 7px">
                         <p:menuitem value="Usuários" outcome="/pages/usuario/CadastroUsuario"/>
                         <p:separator/>

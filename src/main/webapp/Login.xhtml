@@ -18,13 +18,18 @@
     </f:metadata>
 
     <div id="login-dialog">
-        <h1>Login</h1>
-
         <h:form id="frm" prependId="false">
-
+            <div style="margin-left: 8px; float: left">
+                <h:link outcome="/pages/arquivo/Arquivo">
+                    <h:graphicImage library="images" name="tecmarques.jpg"/>
+                </h:link>
+            </div>
             <p:messages id="messages" autoUpdate="true" closable="true" />
 
             <h:panelGrid columns="2" styleClass="grid-login">
+                <f:facet name="header">
+                    <h1>Login</h1>
+                </f:facet>
                 <p:outputLabel value="E-mail" />
                 <p:inputText size="30" id="username" value="#{loginBean.email}" />
 
@@ -32,10 +37,12 @@
                 <p:password size="30" id="password" />
 
                 <h:panelGroup/>
+                <h:panelGroup/>
+                <h:panelGroup/>
                 <p:column>
-                    <p:commandButton value="Login" action="#{loginBean.login}" ajax="false" />
-                    <p:button value="Recuperar senha" style="margin-left: 20px; color: red"
-                              outcome="RecuperarSenha"/>
+                    <p:commandButton value="Fazer login" action="#{loginBean.login}" ajax="false"
+                                     style="background: #FF8C00; color: white"/>
+                    <p:link value="Recuperar senha" outcome="RecuperarSenha" style="margin-left: 20px; color: white;"/>
                 </p:column>
             </h:panelGrid>
         </h:form>

@@ -20,8 +20,10 @@ footer {
 h1 {
     font-size: 24px;
     font-weight: 500;
-    padding: 0px;
-    margin: 0px 0px 0px 12px
+    padding: 10px;
+    margin: 0px;
+    background-color: #363636 !important;
+    color: #FF8C00 !important;
 }
 
 #login-dialog {
@@ -31,11 +33,12 @@ h1 {
 }
 
 .grid-login {
-    background-color: #f2f2f2;
+    background-color: #363636;
     border-radius: 8px;
     border: 1px solid #ccc;
     margin-top: 8px;
-    padding: 10px
+    padding: 10px;
+    color: white;
 }
 
 .rotulo {
@@ -80,7 +83,7 @@ h1 {
 /* Menu sistema inicio */
 .menu-sistema {
     border: 0px !important;
-    padding: 0px !important;
+    padding: 8px !important;
     background: none !important;
 }
 
@@ -91,6 +94,17 @@ h1 {
 .menu-sistema .ui-icon-triangle-1-s {
     background: url(#{resource['images:seta-para-baixo.png']}) no-repeat !important;
 }
+
+.menu-sistema .ui-menu-parent > a .ui-menu.ui-widget li > .ui-menuitem-link.ui-state-hover {
+    background-color: #000000 !important;
+    background-color: #000000 !important;
+    background-image: -moz-linear-gradient(top, #000000, #000000) !important;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#000000), to(#000000)) !important;
+    background-image: -webkit-linear-gradient(top, #000000, #000000) !important;
+    background-image: -o-linear-gradient(top, #000000, #000000) !important;
+    background-image: linear-gradient(to bottom, #000000, #000000) !important;
+}
+
 /* Menu sistema fim */
 
 .ajax-status {

@@ -14,8 +14,10 @@
         </f:metadata>
         <h:form id="frm">
             <p:messages showDetail="false" closable="true" id="messages"/>
+
             <h1>Arquivos</h1>
-            <p:toolbar style="margin-top: 20px; margin-bottom: 20px" id="menuBarra" >
+
+            <p:toolbar style="margin-top: 15px" id="menuBarra" >
                 <p:toolbarGroup>
 
                     <p:commandButton value="Adcionar Arquivos" onsuccess="PF('uploadArquivo').show();"
@@ -131,10 +133,6 @@
                                       sizeLimit="10000000" fileLimit="100" allowTypes="/(\.|\/)(pdf)$/"/>
 
                         <h:panelGrid rendered="#{arquivoUploadController.novosArquivos.size() > 0}" columns="1">
-
-                            <ul>
-                                <li><font style="color: red">A opção <strong>Conferir arquivos</strong> só deve ser clicada quando for finalizado o carregamento de todos arquivos.</font></li>
-                            </ul>
                             <center>
                                 <p:commandButton value="Conferir os #{arquivoUploadController.novosArquivos.size()} arquivo(s)"
 
