@@ -26,6 +26,10 @@ public class UsuarioService {
         return new UsuarioDto(usuarioDao.porEmail(email));
     }
 
+    public boolean existeUsuario(String email){
+        return usuarioDao.porEmail(email) != null;
+    }
+
     public UsuarioDto getUsuarioById(Long id){
         return new UsuarioDto(usuarioDao.porId(id));
     }
@@ -41,7 +45,7 @@ public class UsuarioService {
                 retornoList.add(String.format(titulo, String.format(Consts.CAMPO_OBRIGATORIO, "E-mail")));
             }else if(!usuario.getEmail().contains("@")){
                 retornoList.add(String.format(titulo, String.format(Consts.CAMPO_INVALIDO, "E-mail")));
-            }else if(getUsuarioPorEmail(usuario.getEmail()) != null){
+            }else if(existeUsuario(usuario.getEmail())){
                 retornoList.add(String.format(titulo, String.format(Consts.EMAIL_JA_CADASTRADO, usuario.getEmail())));
             }
 
