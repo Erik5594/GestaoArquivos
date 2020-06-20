@@ -217,6 +217,16 @@
                 </h:panelGrid>
             </p:dialog>
 
+            <p:dialog header="Editar Categoria" widgetVar="nomeCategoria" modal="true" height="120" dynamic="true"
+                      resizable="false" draggable="false" id="nomeCategoria" responsive="true" width="770">
+                <p:messages showDetail="false" closable="true" id="messagesNomeCategoria"/>
+                <h:panelGrid columns="3">
+                    <p:outputLabel for="@next" value="Nome:"/>
+                    <p:inputText value="#{arquivoUploadController.categoriaSelecionadaEdicao.nomeCategoria}" size="80"/>
+                    <p:commandButton icon="pi pi-check" update="frm"
+                                     actionListener="#{arquivoUploadController.editarCategoria}"/>
+                </h:panelGrid>
+            </p:dialog>
 
             <p:confirmDialog header="Exclusão de arquivo"
                              message="Tem certeza que deseja excluir o arquivo?"
@@ -229,6 +239,25 @@
                                  action="#{arquivoUploadController.deletarArquivo}" process="@this"
                                  update="frm" id="yesButton" />
             </p:confirmDialog>
+
+            <p:confirmDialog header="Exclusão de categoria"
+                             message="Tem certeza que deseja excluir a categoria?"
+                             widgetVar="confirmacaoExclusaoCategoriaDialog" id="confirmacaoExclusaoCategoriaDialog">
+                <br/>
+                <h:outputLabel value="#{arquivoUploadController.arquivoSelecionado.nome}" style="margin: 10px"/>
+                <br/><br/>
+                <p:button value="Não" onclick="PF('confirmacaoExclusaoCategoriaDialog').hide(); return false;" />
+                <p:commandButton value="Sim" oncomplete="PF('confirmacaoExclusaoCategoriaDialog').hide();"
+                                 action="#{arquivoUploadController.deletarCategoria}" process="@this"
+                                 update="frm" id="yButton" />
+            </p:confirmDialog>
+
+            <p:contextMenu for="arvore" rendered="#{seguranca.administrador}">
+                <p:menuitem value="Editar" update=":frm:nomeCategoria" action="#{arquivoUploadController.editarNode}"
+                            icon="pi pi-pencil" oncomplete="PF('nomeCategoria').show()"/>
+                <p:menuitem value="Deletar" update=":frm:confirmacaoExclusaoCategoriaDialog" oncomplete="PF('confirmacaoExclusaoCategoriaDialog').show()"
+                            action="#{arquivoUploadController.deleteNode}" icon="pi pi-times"/>
+            </p:contextMenu>
         </h:form>
     </ui:define>
 </ui:composition>

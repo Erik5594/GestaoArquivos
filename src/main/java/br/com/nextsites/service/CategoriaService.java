@@ -89,4 +89,17 @@ public class CategoriaService {
         }
         return null;
     }
+
+    public void editarNomeCategoria(Long idCategoria, String nome){
+        categoriaDao.editarNome(idCategoria, nome);
+    }
+
+    public boolean deletar(Long idCategoria){
+        try{
+            categoriaDao.deletar(idCategoria);
+            return findById(idCategoria) == null;
+        }catch (Exception e){
+            return false;
+        }
+    }
 }

@@ -38,6 +38,19 @@ public class Categorias implements Serializable{
     }
 
     @Transactional
+    public void deletar(Long idCategoria){
+        Categoria categoria = findById(idCategoria);
+        manager.remove(categoria);
+    }
+
+    @Transactional
+    public Categoria editarNome(Long idCategoria, String novoNome){
+        Categoria categoria = findById(idCategoria);
+        categoria.setNomeCategoria(novoNome);
+        return manager.merge(categoria);
+    }
+
+    @Transactional
     public boolean existeCategoria(String nomeCategoria, Long idCategoriaPai){
         try{
             return findNomeAndIdPai(nomeCategoria, idCategoriaPai) != null;

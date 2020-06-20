@@ -9,6 +9,7 @@ import br.com.nextsites.util.jsf.FacesUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.exception.ConstraintViolationException;
 import org.primefaces.event.*;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
@@ -60,9 +61,6 @@ public class ArquivoUploadController {
     private boolean exibirPermissao;
 
     @Getter @Setter
-    private boolean continuar;
-
-    @Getter @Setter
     private boolean exibirPainelCategoria;
 
     @Getter @Setter
@@ -100,6 +98,9 @@ public class ArquivoUploadController {
 
     @Getter @Setter
     private CategoriaDto categoriaSelecionadaCarregarArquivos;
+
+    @Getter @Setter
+    private CategoriaDto categoriaSelecionadaEdicao;
 
     private String nomeDiretorio;
 
@@ -184,6 +185,13 @@ public class ArquivoUploadController {
         }
     }
 
+    public void editarCategoria(){
+        if(categoriaSelecionadaEdicao != null){
+            categoriaService.editarNomeCategoria(categoriaSelecionadaEdicao.getId(), categoriaSelecionadaEdicao.getNomeCategoria());
+            FacesUtil.addInfoMessage("Categoria editada com sucesso!");
+        }
+    }
+
     public void editarNovosArquivos(){
         exibirPainelPermissao();
     }
@@ -239,11 +247,6 @@ public class ArquivoUploadController {
             retorno = false;
             FacesUtil.addErrorMessage("Nenhum arquivo carregado!");
         }
-        if((usuariosComPermissao == null || usuariosComPermissao.isEmpty()) && !continuar){
-            retorno = false;
-            continuar = true;
-            FacesUtil.addErrorMessage("Nenhum usuário foi selecionado para ter acesso aos arquivos carregados. Caso deseje continuar basta clicar em 'Salvar' novamente!");
-        }
         return retorno;
     }
 
@@ -254,7 +257,6 @@ public class ArquivoUploadController {
         selecionadoCategoriaArquivo = null;
         carregarArvoreCategoriaArquivo();
         exibirPainelCategoria();
-        continuar = false;
     }
 
     public void carregarArquivo(FileUploadEvent event) {
@@ -421,6 +423,23 @@ public class ArquivoUploadController {
         exibirUploadFiles = false;
         exibirPainelAlterarNome = false;
         exibirPermissao = false;
+    }
+
+    public void editarNode() {
+        categoriaSelecionadaEdicao = (CategoriaDto) selectedNode.getData();
+    }
+
+    public void deleteNode() {
+        categoriaSelecionadaEdicao = (CategoriaDto)selectedNode.getData();
+    }
+
+    public void deletarCategoria(){
+        if(categoriaSelecionadaEdicao != null){
+            if(!categoriaService.deletar(categoriaSelecionadaEdicao.getId())){
+                FacesUtil.addErrorMessage("Não é possível deletar essa categoria. Existe arquivos nela ou nas suas sub-categorias.");
+            }
+            carregarArvoreCategoriaRoot();
+        }
     }
 
 }
